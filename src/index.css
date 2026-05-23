@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Local fonts ── */
+@font-face {
+  font-family: 'CC Wild Words';
+  src: url('/fonts/CCWildWords.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Komika';
+  src: url('/fonts/KOMIKASL.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Komika';
+  src: url('/fonts/KOMIKASK.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pastry Cream';
+  src: url('/fonts/PastryCream.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --paper: #f4f2ee;
+    --ink: #0a0a0a;
+    --accent: #9b30ff;
+    --cyan: #00e5ff;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    font-family: 'CC Wild Words', 'Space Grotesk', sans-serif;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: #fff;
+  }
+}
+
+@layer components {
+  /* ── Pattern fills ── */
+  .pattern-halftone {
+    background-image: radial-gradient(circle, #0a0a0a 1.5px, transparent 1.5px);
+    background-size: 12px 12px;
+  }
+
+  .pattern-halftone-lg {
+    background-image: radial-gradient(circle, #0a0a0a 2px, transparent 2px);
+    background-size: 18px 18px;
+  }
+
+  .pattern-checker {
+    background-image: repeating-conic-gradient(#0a0a0a 0% 25%, transparent 0% 50%);
+    background-size: 10px 10px;
+  }
+
+  .pattern-diagonal {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      #0a0a0a 0px,
+      #0a0a0a 1.5px,
+      transparent 1.5px,
+      transparent 9px
+    );
+  }
+
+  .pattern-dot-grid {
+    background-image: radial-gradient(circle, #0a0a0a 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .pattern-plus {
+    background-image:
+      repeating-linear-gradient(0deg, #0a0a0a 0, #0a0a0a 1px, transparent 1px, transparent 14px),
+      repeating-linear-gradient(90deg, #0a0a0a 0, #0a0a0a 1px, transparent 1px, transparent 14px);
+    background-size: 14px 14px;
+  }
+
+  /* ── Slanted label strip ── */
+  .label-strip {
+    background-color: #0a0a0a;
+    color: #fff;
+    font-family: 'Komika', 'Space Grotesk', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 10px 3px 8px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    display: inline-block;
+    line-height: 1.4;
+  }
+
+  .label-strip-accent {
+    background-color: var(--accent);
+  }
+
+  .label-strip-reverse {
+    clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  /* ── Angular link underline ── */
+  .link-angular {
+    position: relative;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .link-angular::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--ink);
+    transform: scaleX(0) skewX(-12deg);
+    transform-origin: left;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .link-angular:hover::after {
+    transform: scaleX(1) skewX(-12deg);
+  }
+
+  /* ── Invert button ── */
+  .btn-invert {
+    background: var(--ink);
+    color: #fff;
+    border: 2px solid var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
+  }
+
+  .btn-invert:hover {
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: translate(-2px, -2px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
+  }
+
+  .btn-outline:hover {
+    background: var(--ink);
+    color: #fff;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+    transform: translate(-2px, -2px);
+  }
+
+  /* ── Card offset shadow ── */
+  .card-offset {
+    transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 4px 0 #0a0a0a;
+  }
+
+  .card-offset:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0 #0a0a0a;
+  }
+
+  /* ── Section accent bar ── */
+  .section-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .section-bar::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--ink);
+  }
+
+  /* ── Noise overlay (digital texture) ── */
+  .noise-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .tracking-tight-display {
+    letter-spacing: -0.04em;
+  }
+
+  .skew-label {
+    transform: skewX(-8deg);
+  }
+
+  .border-ink {
+    border-color: #0a0a0a;
+  }
+}
