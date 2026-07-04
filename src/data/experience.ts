@@ -11,6 +11,28 @@ export interface ExperienceEntry {
 export const experience: ExperienceEntry[] = [
   // ── Research ──────────────────────────────────────────────────────────────
   {
+    org: 'Cornell University, Department of Civil Engineering',
+    role: 'Research Assistant',
+    period: 'Jun 2026 – Present',
+    type: 'research',
+    bullets: [
+      'Building a data-assimilation pipeline that estimates unobserved irrigation inputs from satellite observations and land-surface model outputs.',
+      'Developed particle-based inference workflows with likelihood weighting, resampling, posterior estimation, and multi-day calibration windows.',
+      'Processing heterogeneous spatiotemporal datasets with Python, xarray, pandas, NetCDF, and geospatial tools.',
+    ],
+  },
+  {
+    org: 'Algoverse LLM Research Group',
+    role: 'Researcher',
+    period: 'May 2026 – Present',
+    type: 'research',
+    bullets: [
+      'Researching representational drift in long-horizon LLM forecasting agents using time-aligned prediction-market, news, and order-book datasets.',
+      'Developing behavioral metrics for anchoring, forecast instability, sample dispersion, and directional update consistency.',
+      'Investigating whether linear probes can surface internal representation changes before forecasts become visibly miscalibrated.',
+    ],
+  },
+  {
     org: 'Cornell Geo Data',
     role: 'Researcher',
     period: 'Nov 2025 – Present',

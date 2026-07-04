@@ -1,5 +1,12 @@
-import { Button } from '../ui/Button';
+import { profile } from '../../data/profile';
+import { ButtonLink } from '../ui/Button';
 import { SectionHeader } from '../ui/SectionHeader';
+
+const contactLinks = [
+  { label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
+  { label: 'GitHub', value: '@haydenmfu', href: profile.github },
+  { label: 'LinkedIn', value: '/in/hayden-fu', href: profile.linkedin },
+];
 
 export function Contact() {
   return (
@@ -15,12 +22,8 @@ export function Contact() {
           />
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {/* Left — headline */}
             <div className="p-10 lg:p-16 border-b-2 lg:border-b-0 lg:border-r-2 border-ink">
-              <h2
-                className="font-display font-bold text-ink leading-none mb-6"
-                style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', letterSpacing: '-0.02em' }}
-              >
+              <h2 className="font-display font-bold text-ink leading-none mb-6 text-4xl sm:text-5xl lg:text-6xl">
                 Let's build
                 <br />
                 something
@@ -28,46 +31,48 @@ export function Contact() {
                 <span className="text-accent">sharp.</span>
               </h2>
               <p className="font-body text-gray-500 text-base leading-relaxed max-w-sm">
-                Open to research internships, SWE roles, and interesting problems.
-                Response within 24 hours.
+                Open to research internships, SWE roles, and interesting problems. Email is the
+                fastest way to reach me.
               </p>
             </div>
 
-            {/* Right — links */}
             <div className="p-10 lg:p-16 flex flex-col justify-between gap-8">
               <div className="flex flex-col gap-5">
-                {[
-                  { label: 'Email', value: 'haydenmfu@gmail.com', href: 'mailto:haydenmfu@gmail.com' },
-                  { label: 'GitHub', value: '@haydenmfu', href: 'https://github.com/haydenmfu' },
-                  { label: 'LinkedIn', value: 'Add your LinkedIn URL', href: '#' },
-                ].map(({ label, value, href }) => (
-                  <div key={label} className="flex flex-col gap-1 border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <span className="font-mono text-xs text-gray-400 uppercase tracking-widest">{label}</span>
-                    <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
-                      className="link-angular font-display font-semibold text-ink text-base">
-                      {value}
-                    </a>
-                  </div>
-                ))}
+                {contactLinks.map(({ label, value, href }) => {
+                  const isExternal = href.startsWith('http');
+
+                  return (
+                    <div key={label} className="flex flex-col gap-1 border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                      <span className="font-mono text-xs text-gray-400 uppercase tracking-widest">{label}</span>
+                      <a
+                        href={href}
+                        target={isExternal ? '_blank' : undefined}
+                        rel={isExternal ? 'noopener noreferrer' : undefined}
+                        className="link-angular font-display font-semibold text-ink text-base"
+                      >
+                        {value}
+                      </a>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="flex gap-3 flex-wrap">
-                <Button size="md">
-                  <a href="mailto:haydenmfu@gmail.com">Send a Message →</a>
-                </Button>
-                <Button variant="outline" size="md">
+                <ButtonLink size="md" href={`mailto:${profile.email}`}>
+                  Send a Message <span aria-hidden>&rarr;</span>
+                </ButtonLink>
+                <ButtonLink variant="outline" size="md" href={profile.resume} target="_blank" rel="noopener noreferrer">
                   Resume
-                </Button>
+                </ButtonLink>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer strip */}
         <div className="mt-12 pt-6 border-t-2 border-ink flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
-            <span className="label-strip">Hayden Fu</span>
-            <span className="font-mono text-xs text-gray-400">© 2026</span>
+            <span className="label-strip">{profile.name}</span>
+            <span className="font-mono text-xs text-gray-400">&copy; 2026</span>
           </div>
           <div className="font-mono text-xs text-gray-300 tracking-widest">
             MADE WITH PRECISION

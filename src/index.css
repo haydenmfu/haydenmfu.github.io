@@ -234,10 +234,6 @@
     font-family: 'Space Grotesk', sans-serif;
   }
 
-  .tracking-tight-display {
-    letter-spacing: -0.04em;
-  }
-
   .skew-label {
     transform: skewX(-8deg);
   }

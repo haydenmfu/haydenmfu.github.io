@@ -1,20 +1,20 @@
+import { profile } from '../../data/profile';
 import { SectionHeader } from '../ui/SectionHeader';
 
 const traits = [
-  { label: 'Degree', value: 'CS & Statistics' },
-  { label: 'GPA', value: '4.02 / 4.0' },
-  { label: 'Based in', value: 'Ithaca, NY' },
-  { label: 'Open to', value: 'Research & SWE Internships' },
+  { label: 'Degree', value: profile.degree },
+  { label: 'GPA', value: '3.78' },
+  { label: 'Based in', value: profile.location },
+  { label: 'Open to', value: profile.availability },
 ];
 
 export function About() {
   return (
     <section id="about" className="py-24 bg-paper-mid border-b-2 border-ink">
       <div className="max-w-6xl mx-auto px-6 lg:px-12">
-        <SectionHeader index="02" title="About" />
+        <SectionHeader index="04" title="About" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 border-2 border-ink">
-          {/* Left — graphic block */}
           <div className="lg:col-span-4 relative min-h-64 bg-ink border-b-2 lg:border-b-0 lg:border-r-2 border-ink overflow-hidden">
             <div className="absolute inset-0 pattern-halftone-lg" style={{ opacity: 0.15 }} />
             <div
@@ -24,7 +24,6 @@ export function About() {
                   'repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(155,48,255,0.06) 20px, rgba(155,48,255,0.06) 22px)',
               }}
             />
-            {/* Corner accent triangle */}
             <div
               className="absolute top-0 left-0 w-16 h-16 bg-accent opacity-80"
               style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)' }}
@@ -32,10 +31,7 @@ export function About() {
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div
-                  className="font-display font-bold text-white"
-                  style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', letterSpacing: '-0.04em', lineHeight: 1 }}
-                >
+                <div className="font-display font-bold text-white text-6xl lg:text-7xl leading-none">
                   4+
                 </div>
                 <div className="font-mono text-xs text-gray-400 tracking-widest mt-2 uppercase">
@@ -49,22 +45,20 @@ export function About() {
             </div>
           </div>
 
-          {/* Right — copy */}
           <div className="lg:col-span-8 p-8 lg:p-12 flex flex-col justify-between gap-10">
             <div>
               <p className="font-body text-base lg:text-lg text-gray-600 leading-relaxed max-w-prose mb-6">
-                CS + Statistics student at Cornell (Class of 2028, GPA 4.02). I research at the
-                edges — ML forecasting, algorithmic fairness, policy data analysis — and build the
-                software to go with it.
+                I'm a CS + Statistics student at Cornell building research software for messy,
+                real-world systems: environmental sensing, water-resource modeling, LLM behavior,
+                policy analysis, and algorithmic fairness.
               </p>
               <p className="font-body text-base text-gray-500 leading-relaxed max-w-prose">
-                My work spans atmospheric ML models for lake-effect snow, criminal justice algorithm
-                audits, and educational mapping tools. I care about systems that work correctly and
-                research that actually matters outside the lab.
+                Recent work includes particle-based irrigation inference with satellite and
+                land-surface data, long-horizon LLM forecasting-agent evaluation, lake-effect snow
+                correction models, and educational mapping tools for K-12 social studies curricula.
               </p>
             </div>
 
-            {/* Trait grid */}
             <div className="grid grid-cols-2 gap-0 border-t-2 border-ink">
               {traits.map((trait, i) => (
                 <div

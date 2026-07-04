@@ -41,7 +41,7 @@ export function Experience() {
   return (
     <section id="experience" className="py-24 bg-paper-mid border-b-2 border-ink">
       <div className="max-w-6xl mx-auto px-6 lg:px-12">
-        <SectionHeader index="04" title="Experience" subtitle="Research, work & activities" />
+        <SectionHeader index="02" title="Experience" subtitle="Research, work & activities" />
 
         {/* Research — 2-column grid */}
         <div className="mb-10">
