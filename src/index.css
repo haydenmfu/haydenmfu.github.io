@@ -37,10 +37,10 @@
 
 @layer base {
   :root {
-    --paper: #f4f2ee;
-    --ink: #0a0a0a;
-    --accent: #9b30ff;
-    --cyan: #00e5ff;
+    --paper: #f8f5e9;
+    --ink: #203b43;
+    --accent: #3d858c;
+    --cyan: #a9d6d0;
   }
 
   * {
@@ -54,13 +54,13 @@
   body {
     background-color: var(--paper);
     color: var(--ink);
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3 {
-    font-family: 'CC Wild Words', 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
   }
 
   ::selection {
@@ -72,12 +72,12 @@
 @layer components {
   /* ── Pattern fills ── */
   .pattern-halftone {
-    background-image: radial-gradient(circle, #0a0a0a 1.5px, transparent 1.5px);
+    background-image: radial-gradient(circle, #3d858c 1.5px, transparent 1.5px);
     background-size: 12px 12px;
   }
 
   .pattern-halftone-lg {
-    background-image: radial-gradient(circle, #0a0a0a 2px, transparent 2px);
+    background-image: radial-gradient(circle, #3d858c 2px, transparent 2px);
     background-size: 18px 18px;
   }
 
@@ -110,15 +110,15 @@
 
   /* ── Slanted label strip ── */
   .label-strip {
-    background-color: #0a0a0a;
+    background-color: var(--ink);
     color: #fff;
-    font-family: 'Komika', 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 3px 10px 3px 8px;
-    clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    border-radius: 999px;
     display: inline-block;
     line-height: 1.4;
   }
@@ -128,7 +128,7 @@
   }
 
   .label-strip-reverse {
-    clip-path: polygon(6px 0, 100% 0, 100% 100%, 0 100%);
+    border-radius: 999px;
   }
 
   /* ── Angular link underline ── */
@@ -160,7 +160,7 @@
     background: var(--ink);
     color: #fff;
     border: 2px solid var(--ink);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: 0.04em;
     transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
@@ -177,7 +177,7 @@
     background: transparent;
     color: var(--ink);
     border: 2px solid var(--ink);
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: 0.04em;
     transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
@@ -194,12 +194,12 @@
   .card-offset {
     transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
       box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 4px 4px 0 #0a0a0a;
+    box-shadow: 4px 4px 0 var(--ink);
   }
 
   .card-offset:hover {
     transform: translate(-3px, -3px);
-    box-shadow: 7px 7px 0 #0a0a0a;
+    box-shadow: 7px 7px 0 var(--ink);
   }
 
   /* ── Section accent bar ── */
@@ -231,7 +231,7 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
   }
 
   .skew-label {
@@ -239,6 +239,44 @@
   }
 
   .border-ink {
-    border-color: #0a0a0a;
+    border-color: var(--ink);
   }
+}
+
+/* The illustration occupies the same space a future interactive scene can use. */
+.snorlax-stage {
+  position: relative;
+  width: 100%;
+  min-height: 460px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  border-radius: 42% 42% 28px 28px;
+  background: radial-gradient(circle at 50% 58%, #fff9e9 0 31%, #cbe6df 32% 62%, #9fcfc9 100%);
+  box-shadow: 10px 10px 0 var(--ink);
+}
+
+.snorlax-stage::before,
+.snorlax-stage::after {
+  content: '✦';
+  position: absolute;
+  color: #f8f5e9;
+  font-size: 2rem;
+}
+.snorlax-stage::before { top: 18%; left: 14%; }
+.snorlax-stage::after { top: 33%; right: 12%; font-size: 1.3rem; }
+.snorlax-art { width: min(100%, 520px); max-height: 460px; position: relative; z-index: 1; filter: drop-shadow(0 12px 0 rgba(32, 59, 67, .08)); }
+.sleep-z { position: absolute; z-index: 2; color: var(--ink); font-family: 'Nunito', sans-serif; font-weight: 900; line-height: 1; transform: rotate(-12deg); }
+.sleep-z-one { right: 22%; top: 19%; font-size: 1.5rem; }
+.sleep-z-two { right: 16%; top: 11%; font-size: 2.2rem; }
+.sleep-z-three { right: 9%; top: 3%; font-size: 3.2rem; }
+.stage-caption { position: absolute; z-index: 2; bottom: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; border-radius: 999px; padding: 5px 16px; background: var(--paper); color: var(--ink); border: 2px solid var(--ink); font: 800 .8rem 'Nunito', sans-serif; }
+
+.btn-invert, .btn-outline, .card-offset, .snorlax-stage, article { border-radius: 16px; }
+.btn-invert, .btn-outline { border-radius: 999px; }
+
+@media (max-width: 640px) {
+  .snorlax-stage { min-height: 340px; box-shadow: 6px 6px 0 var(--ink); }
+  .snorlax-art { max-height: 340px; }
 }

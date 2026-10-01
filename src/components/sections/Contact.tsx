@@ -28,7 +28,7 @@ export function Contact() {
                 <br />
                 something
                 <br />
-                <span className="text-accent">sharp.</span>
+                <span className="text-accent">wonderful.</span>
               </h2>
               <p className="font-body text-gray-500 text-base leading-relaxed max-w-sm">
                 Open to research internships, SWE roles, and interesting problems. Email is the
@@ -75,7 +75,7 @@ export function Contact() {
             <span className="font-mono text-xs text-gray-400">&copy; 2026</span>
           </div>
           <div className="font-mono text-xs text-gray-300 tracking-widest">
-            MADE WITH PRECISION
+            DREAM BIG · REST OFTEN
           </div>
         </div>
       </div>

@@ -1,175 +1,66 @@
-import heroGraphic from '../../assets/hero.png';
 import { profile } from '../../data/profile';
 import { Button, ButtonLink } from '../ui/Button';
 
-function CornerTriangle({
-  position,
-  size = 'w-64 h-64',
-  color = 'rgba(20, 15, 25, 0.2)',
-  pattern = 'pattern-halftone',
-}: {
-  position: 'tl' | 'tr' | 'bl' | 'br';
-  size?: string;
-  color?: string;
-  pattern?: string;
-}) {
-  const clipPath = {
-    tl: 'polygon(0 0, 100% 0, 0 100%)',
-    tr: 'polygon(100% 0, 0 0, 100% 100%)',
-    bl: 'polygon(0 100%, 100% 100%, 0 0)',
-    br: 'polygon(100% 100%, 0 100%, 100% 0)',
-  }[position];
-
-  const gradientDir = {
-    tl: '135deg',
-    tr: '225deg',
-    bl: '45deg',
-    br: '315deg',
-  }[position];
-
-  const posClass = {
-    tl: 'top-0 left-0',
-    tr: 'top-0 right-0',
-    bl: 'bottom-0 left-0',
-    br: 'bottom-0 right-0',
-  }[position];
-
+function SleepyDisplay() {
   return (
-    <div className={`absolute ${posClass} ${size} pointer-events-none`} style={{ clipPath }}>
-      <div
-        className="absolute inset-0"
-        style={{ background: `linear-gradient(${gradientDir}, ${color} 0%, transparent 65%)` }}
-      />
-      <div
-        className={`absolute inset-0 ${pattern}`}
-        style={{
-          opacity: 0.12,
-          maskImage: `linear-gradient(${gradientDir}, transparent 15%, rgba(0,0,0,0.85) 42%, transparent 72%)`,
-          WebkitMaskImage: `linear-gradient(${gradientDir}, transparent 15%, rgba(0,0,0,0.85) 42%, transparent 72%)`,
-        }}
-      />
+    <div id="snorlax-display" className="snorlax-stage" aria-label="A sleeping Snorlax inspired illustration, with space for a future interactive display">
+      <span className="sleep-z sleep-z-one" aria-hidden="true">z</span>
+      <span className="sleep-z sleep-z-two" aria-hidden="true">z</span>
+      <span className="sleep-z sleep-z-three" aria-hidden="true">Z</span>
+      <svg className="snorlax-art" viewBox="0 0 520 500" role="img" aria-label="Sleeping Snorlax illustration">
+        <ellipse cx="260" cy="445" rx="185" ry="27" fill="#203b43" opacity=".12" />
+        <path d="M109 230 Q66 213 65 279 Q63 338 112 360 L150 334Z" fill="#357d85" stroke="#203b43" strokeWidth="8" />
+        <path d="M411 230 Q454 213 455 279 Q457 338 408 360 L370 334Z" fill="#357d85" stroke="#203b43" strokeWidth="8" />
+        <ellipse cx="260" cy="295" rx="158" ry="143" fill="#357d85" stroke="#203b43" strokeWidth="9" />
+        <ellipse cx="260" cy="319" rx="111" ry="105" fill="#f4edda" />
+        <path d="M153 95 L137 28 Q177 30 202 70Z" fill="#357d85" stroke="#203b43" strokeWidth="8" strokeLinejoin="round" />
+        <path d="M367 95 L383 28 Q343 30 318 70Z" fill="#357d85" stroke="#203b43" strokeWidth="8" strokeLinejoin="round" />
+        <ellipse cx="260" cy="137" rx="116" ry="100" fill="#357d85" stroke="#203b43" strokeWidth="9" />
+        <path d="M165 151 Q260 106 355 151 Q345 223 260 227 Q175 223 165 151" fill="#f4edda" />
+        <path d="M190 140 Q209 155 228 139 M292 139 Q311 155 330 140" fill="none" stroke="#203b43" strokeWidth="7" strokeLinecap="round" />
+        <path d="M247 167 Q260 177 273 167 M232 189 Q260 208 288 189" fill="none" stroke="#203b43" strokeWidth="6" strokeLinecap="round" />
+        <path d="M225 188 L233 209 L240 194 M280 194 L287 209 L295 188" fill="#fffaf0" stroke="#203b43" strokeWidth="3" strokeLinejoin="round" />
+        <ellipse cx="135" cy="394" rx="67" ry="45" transform="rotate(-25 135 394)" fill="#f4edda" stroke="#203b43" strokeWidth="8" />
+        <ellipse cx="385" cy="394" rx="67" ry="45" transform="rotate(25 385 394)" fill="#f4edda" stroke="#203b43" strokeWidth="8" />
+        <g fill="#9d7377"><ellipse cx="111" cy="389" rx="13" ry="17"/><ellipse cx="134" cy="371" rx="11" ry="15"/><ellipse cx="158" cy="382" rx="11" ry="15"/><ellipse cx="129" cy="410" rx="23" ry="15"/><ellipse cx="409" cy="389" rx="13" ry="17"/><ellipse cx="386" cy="371" rx="11" ry="15"/><ellipse cx="362" cy="382" rx="11" ry="15"/><ellipse cx="391" cy="410" rx="23" ry="15"/></g>
+      </svg>
+      <span className="stage-caption">A little room to recharge</span>
     </div>
-  );
-}
-
-function InkSpark({ type, className }: { type: 'diamond' | 'cross' | 'dashes'; className?: string }) {
-  if (type === 'diamond') {
-    return (
-      <svg className={`absolute pointer-events-none ${className}`} width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
-        <polygon points="11,2 20,11 11,20 2,11" stroke="#0a0a0a" strokeWidth="1.5" fill="none" />
-        <polygon points="11,6 16,11 11,16 6,11" stroke="#0a0a0a" strokeWidth="0.75" fill="none" opacity="0.4" />
-      </svg>
-    );
-  }
-
-  if (type === 'cross') {
-    return (
-      <svg className={`absolute pointer-events-none ${className}`} width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-        <line x1="2" y1="2" x2="16" y2="16" stroke="#0a0a0a" strokeWidth="1.5" />
-        <line x1="16" y1="2" x2="2" y2="16" stroke="#0a0a0a" strokeWidth="1.5" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg className={`absolute pointer-events-none ${className}`} width="28" height="18" viewBox="0 0 28 18" fill="none" aria-hidden>
-      <line x1="0" y1="16" x2="8" y2="2" stroke="#0a0a0a" strokeWidth="1.5" />
-      <line x1="10" y1="16" x2="18" y2="2" stroke="#0a0a0a" strokeWidth="1.5" />
-      <line x1="20" y1="16" x2="28" y2="2" stroke="#0a0a0a" strokeWidth="1.5" />
-    </svg>
   );
 }
 
 export function Hero() {
   return (
-    <section
-      id="hero"
-      className="relative min-h-[92svh] flex flex-col justify-center overflow-hidden bg-paper border-b-3 border-ink"
-    >
-      <CornerTriangle position="tr" size="w-80 h-80" color="rgba(22, 16, 30, 0.18)" pattern="pattern-halftone" />
-      <CornerTriangle position="bl" size="w-56 h-56" color="rgba(38, 18, 20, 0.15)" pattern="pattern-checker" />
-
-      <InkSpark type="diamond" className="top-[18%] left-[42%] opacity-20" />
-      <InkSpark type="cross" className="top-[65%] right-[28%] opacity-15 hidden lg:block" />
-      <InkSpark type="dashes" className="bottom-[22%] left-[18%] opacity-20 hidden sm:block" />
-
-      <div className="absolute top-0 left-0 w-1 h-full bg-accent hidden lg:block" />
-
-      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-12 pt-28 pb-12">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-12">
-          <div className="flex-1 max-w-3xl">
+    <section id="hero" className="relative min-h-[92svh] flex flex-col justify-center overflow-hidden bg-paper border-b-3 border-ink">
+      <div className="absolute inset-0 pointer-events-none opacity-20 pattern-halftone" />
+      <div className="relative z-10 max-w-7xl w-full mx-auto px-6 lg:px-12 pt-28 pb-12">
+        <div className="grid lg:grid-cols-2 items-center gap-10 lg:gap-8">
+          <div className="max-w-2xl">
             <div className="flex items-center gap-3 mb-8 flex-wrap">
               <span className="label-strip">Open to {profile.availability}</span>
               <span className="w-2 h-2 rounded-full bg-accent inline-block" />
-              <span className="font-mono text-xs text-gray-400 tracking-widest">2026</span>
+              <span className="font-mono text-xs text-ink/60 tracking-widest">2026</span>
             </div>
-
-            <h1 className="font-display font-bold text-ink leading-none mb-6 text-6xl sm:text-7xl lg:text-8xl xl:text-9xl">
-              Hayden
-              <br />
-              <span className="relative inline-block">
-                Fu
-                <span className="absolute left-0 bottom-1 h-3 bg-accent w-full -z-10 opacity-35" />
-              </span>
-              <span className="text-accent">.</span>
+            <h1 className="font-display font-black text-ink leading-[.95] mb-6 text-6xl sm:text-7xl lg:text-8xl xl:text-9xl">
+              Hayden<br /><span className="text-accent">Fu.</span>
             </h1>
-
-            <p className="font-body text-lg lg:text-xl text-gray-500 max-w-xl leading-relaxed mb-10">
-              CS + Statistics at Cornell. I research and build at the intersection of machine
-              learning, water systems, policy data analysis, and cybersecurity.
+            <p className="font-body text-lg lg:text-xl text-ink/75 max-w-xl leading-relaxed mb-10">
+              CS + Statistics at Cornell. I research and build at the intersection of machine learning, water systems, policy data analysis, and cybersecurity.
             </p>
-
             <div className="flex flex-wrap gap-4 items-center">
-              <Button size="lg" type="button" onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}>
-                View Work <span aria-hidden>&rarr;</span>
-              </Button>
-              <ButtonLink variant="outline" size="lg" href={profile.resume} target="_blank" rel="noopener noreferrer">
-                Resume
-              </ButtonLink>
+              <Button size="lg" type="button" onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}>View Work <span aria-hidden>&rarr;</span></Button>
+              <ButtonLink variant="outline" size="lg" href={profile.resume} target="_blank" rel="noopener noreferrer">Resume</ButtonLink>
             </div>
           </div>
-
-          <div className="relative w-full lg:w-72 h-72 flex-shrink-0 hidden lg:block">
-            <div className="absolute inset-0 border-2 border-ink bg-paper-mid translate-x-3 translate-y-3" />
-            <div className="absolute inset-0 pattern-dot-grid border-2 border-ink" style={{ opacity: 0.12 }} />
-            <img
-              src={heroGraphic}
-              alt=""
-              className="absolute top-5 left-1/2 w-44 -translate-x-1/2 opacity-95"
-              aria-hidden="true"
-            />
-            <div className="absolute bottom-4 left-4 right-4 bg-ink text-white p-5 font-display">
-              <div className="text-xs text-gray-400 font-mono tracking-widest mb-2 uppercase">Languages</div>
-              <div className="flex flex-wrap gap-2">
-                {['Python', 'C++', 'Java', 'R', 'SQL', 'OCaml'].map((tag) => (
-                  <span key={tag} className="border border-gray-600 text-gray-200 text-xs px-2 py-0.5 font-mono">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="absolute top-3 right-3 w-8 h-8 border-t-2 border-r-2 border-accent" />
-          </div>
+          <SleepyDisplay />
         </div>
-
         <div className="mt-14 pt-6 border-t-2 border-ink flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <a href={profile.github} target="_blank" rel="noopener noreferrer"
-              className="link-angular font-mono text-xs text-gray-400 hover:text-ink transition-colors">
-              GitHub
-            </a>
-            <a href={`mailto:${profile.email}`}
-              className="link-angular font-mono text-xs text-gray-400 hover:text-ink transition-colors">
-              Email
-            </a>
-            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"
-              className="link-angular font-mono text-xs text-gray-400 hover:text-ink transition-colors">
-              LinkedIn
-            </a>
+            <a href={profile.github} target="_blank" rel="noopener noreferrer" className="link-angular font-body font-bold text-sm text-ink/70 hover:text-ink transition-colors">GitHub</a>
+            <a href={`mailto:${profile.email}`} className="link-angular font-body font-bold text-sm text-ink/70 hover:text-ink transition-colors">Email</a>
+            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="link-angular font-body font-bold text-sm text-ink/70 hover:text-ink transition-colors">LinkedIn</a>
           </div>
-          <div className="font-mono text-xs text-gray-300 tracking-widest hidden sm:block">
-            SCROLL &darr;
-          </div>
+          <div className="font-mono text-xs text-ink/50 tracking-widest hidden sm:block">SCROLL &darr;</div>
         </div>
       </div>
     </section>
