@@ -8,7 +8,7 @@ targets = [
     ('Research', 'research', 'books'),
     ('About Me', 'about', 'notebook'),
     ('Experience', 'experience', 'papers'),
-    ('Resume', 'resume', 'résumé paper'),
+    ('Resume', 'resume', 'resume paper'),
     ('Contact', 'contact', 'postcard'),
 ]
 

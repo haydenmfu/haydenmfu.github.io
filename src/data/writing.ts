@@ -2,14 +2,22 @@ export interface Article {
   title: string;
   excerpt: string;
   category: string;
-  date: string;
-  readTime: string;
+  date?: string;
+  readTime?: string;
   venue: string;
   featured?: boolean;
   link?: string;
 }
 
 export const articles: Article[] = [
+  {
+    title: 'Linking Trajectory Drift to Representational Degradation in Sequential LLM Forecasting',
+    excerpt: "We studied how three open-weight LLMs update predictions across 100 Kalshi markets as timestamped news arrives. By varying access to earlier forecasts, probing internal representations, and rewriting prior predictions, we found that self-generated history can anchor later forecasts and distort belief updating in ways that final accuracy alone misses. Accepted to the Interpreting Agent Behavior workshop at NeurIPS 2026.",
+    category: 'AI Research',
+    venue: 'Interpreting Agent Behavior workshop at NeurIPS 2026',
+    featured: true,
+    link: 'https://openreview.net/forum?id=UXthrIAHqX',
+  },
   {
     title: 'Why Encampment Bans Don\'t Reduce Homelessness',
     excerpt:
@@ -18,7 +26,6 @@ export const articles: Article[] = [
     date: 'Nov 2024',
     readTime: '12 min',
     venue: 'Journal of Student Research',
-    featured: true,
     link: 'https://www.researchgate.net/publication/394963694_Why_Encampment_Bans_Don%27t_Reduce_Homelessness',
   },
   {

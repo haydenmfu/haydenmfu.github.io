@@ -12,14 +12,7 @@ function ExperienceCard({ entry }: { entry: ExperienceEntry }) {
         <span className="font-mono text-xs text-gray-400 whitespace-nowrap pt-0.5">{entry.period}</span>
       </div>
 
-      <ul className="flex flex-col gap-1.5 mt-1">
-        {entry.bullets.map((bullet, i) => (
-          <li key={i} className="font-body text-sm text-gray-600 flex gap-2 leading-relaxed">
-            <span className="text-gray-300 flex-shrink-0 mt-0.5">–</span>
-            <span>{bullet}</span>
-          </li>
-        ))}
-      </ul>
+      <p className="font-body text-sm text-gray-600 leading-relaxed mt-1">{entry.description}</p>
     </div>
   );
 }

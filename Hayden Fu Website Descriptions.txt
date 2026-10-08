@@ -1,0 +1,187 @@
+HAYDEN FU — WEBSITE COPY
+Updated October 2, 2026
+
+IMPLEMENTATION NOTES (NOT WEBSITE COPY)
+---------------------------------------
+Use Hayden_Fu_Resume_Data_Analyst-6.pdf as the factual reference for the descriptions and role titles. The descriptions below are written as cohesive website paragraphs, not résumé bullets. Preserve this paragraph format. Professor Asif Wilson is the confirmed Urbana-Champaign advisor.
+Keep existing working project and publication URLs. Do not invent links, accomplishments, or additional metrics. Preserve dates unless explicitly supplied below. Older roles absent from this résumé retain the titles shown in the website screenshots.
+Remove decorative slogans such as “Curiosity is a good reason to stay awake,” “A note from Hayden,” “Let's compare notes,” and “A portable version of my work and experience.”
+The Research page was not included in the screenshots. Use the résumé-sourced research descriptions below wherever the corresponding work appears on that page; retain existing publication metadata and links.
+
+
+1. SHARED NAVIGATION
+====================
+Home link: Back to desk
+Navigation: Projects | Research | About me | Experience | Résumé | Contact
+Footer: © 2026 Hayden Fu
+Return link: Back to desk
+
+
+2. HOME
+========
+Name: Hayden Fu
+Introduction: I'm Hayden, a CS and statistics student at Cornell. Click around the desk to see what I've been working on.
+Object labels: Projects | Research | About Me | Experience | Résumé | Contact
+Secondary navigation label: Explore
+Remove the existing sleepy-visitor caption. The illustration already establishes the theme.
+
+
+3. ABOUT ME
+============
+Heading: About me
+
+I'm Hayden, a sophomore at Cornell studying computer science and statistics.
+
+Most of my work so far has been in research. I've worked on estimating irrigation from satellite observations, studying how earlier predictions influence LLM forecasts, and analyzing data about public policy. I like projects where I get to write code and think carefully about what the results actually tell us.
+
+Recently, I've been working on irrigation modeling with a research group at Cornell and studying LLM forecasting through Algoverse. Our forecasting paper was accepted to the Interpreting Agent Behavior workshop at NeurIPS 2026.
+
+I'm looking for summer 2027 internships in software engineering, data science, or research.
+
+Right-page facts:
+School: Cornell University
+Studying: Computer Science and Statistics
+Location: Ithaca during the school year; the Bay Area during breaks
+Looking for: Summer 2027 internships
+Link: View my experience
+
+
+4. PROJECTS
+============
+Heading: Projects
+No introductory slogan needed.
+Use one paragraph per project. These descriptions explain the project; the Experience entries emphasize my contribution in each role.
+
+LLM Forecasting Drift
+This project examines how LLM forecasts change over time and how much they depend on earlier predictions. I built a Python pipeline that brings together prediction-market prices, order-book data, and news available at each forecast date. We evaluated three open-weight models across 100 sequential forecasting tasks, using linear probes and deliberately altered prior forecasts to investigate their behavior. Our paper was accepted to the IAB workshop at NeurIPS 2026.
+
+Irrigation Data Assimilation
+I'm working on estimating irrigation from satellite soil-moisture observations and land-surface model outputs. The Python pipeline compares possible irrigation histories with the observations to estimate how much water was applied. Much of my work involves making those comparisons reliable: aligning datasets across time and location, filtering noisy observations, and testing calibration choices.
+
+Lake-Effect Snow Forecasting
+With Cornell Geo Data, I'm working on correcting short-term weather forecasts using local sensor observations. I built a GAN-based model in Python and PyTorch that combines sensor data with numerical weather predictions. I also cleaned and validated the sensor time series used to evaluate the model.
+
+Constitutional AI Bias Reduction
+I investigated whether changes to ChatGPT's instructions could reduce political bias in its responses. I designed five prompting strategies and tested them across more than 300 prompts to compare their effects. The work was published in the Journal of Emerging Investigators.
+
+I3 Cultural Resources Map
+Working with Professor Asif Wilson at the University of Illinois Urbana-Champaign, I built a map app to help K–12 educators find cultural and historical resources for their lessons. The app brings together more than 1,000 resources, with a Python and ChatGPT-powered classification pipeline to help organize them.
+
+COMPAS Bias Audit
+I analyzed how the COMPAS recidivism prediction system performed across racial, gender, and age groups. Using logistic regression and measures such as precision and recall, I examined differences in its predictions and the kinds of errors it made.
+
+Project link labels, where corresponding destinations exist:
+View project | View code | Read paper
+
+
+5. EXPERIENCE
+==============
+Heading: Experience
+No subtitle needed.
+
+RESEARCH
+--------
+
+Algoverse LLM Research Group
+Role: Applied AI Engineer
+Dates: May 2026 – Present
+I built the forecasting pipeline for our study of how LLM predictions change over time, using Python and Azure AI Foundry to align prediction-market data with news evidence. I evaluated three open-weight models across 100 sequential forecasting tasks, using linear probes and counterfactual interventions to examine calibration and drift. The resulting paper was accepted to the IAB workshop at NeurIPS 2026.
+
+Cornell University, Civil Engineering
+Role: Data Specialist
+Dates: Jun 2026 – Present
+I develop Python workflows for estimating irrigation from satellite observations and model outputs. I built the particle-based inference pipeline and the preprocessing and calibration steps needed to align the datasets across time and location, using tools including xarray, pandas, and NetCDF. I also used Claude Code to help debug and refactor the diagnostics, making the experiments easier to understand and reproduce.
+
+Cornell Geo Data
+Role: ML Research Engineer
+Dates: Nov 2025 – Present
+I work with sensor observations and numerical weather predictions to improve short-term forecasting. I built a GAN-based correction model in Python and PyTorch, and prepared the sensor data used to evaluate it by cleaning and validating the raw time series.
+
+Harvard Institute of Quantitative Social Sciences
+Role: Research Intern
+Dates: Jun 2024 – Aug 2024
+I studied the effects of encampment-ban policies using housing and policy data. I applied difference-in-differences regression to estimate how outcomes changed following the policies, with the findings published in the Journal of Student Research.
+
+Aspiring Scholars Directed Research Program
+Role: Independent LLM Researcher
+Dates: Jan 2023 – Jun 2024
+I researched whether prompting strategies could reduce political bias in ChatGPT. I designed five approaches and evaluated them across more than 300 prompts, comparing how the model's responses changed under different instructions. The results were published in the Journal of Emerging Investigators.
+
+Inspirit AI
+Role: Student Researcher
+Dates: Apr 2024 – Jun 2024
+I used Python and logistic regression to examine differences in COMPAS predictions across demographic groups, including where the system made different kinds of errors.
+
+University of California, Davis
+Role: Undergraduate Researcher
+Dates: Feb 2022 – Feb 2023
+Working with Professor Drew Halfmann, I analyzed newspaper coverage of abortion policy from 1870 to 2021. I used Python to organize articles and visualize how often different organizations appeared in the coverage over time.
+
+Fremont LEAF Garden
+Role: Student Researcher
+Dates: Feb 2022 – Aug 2022
+I built a Raspberry Pi program to analyze soil measurements and explored machine-learning models for predicting garden yields.
+
+WORK
+----
+
+Mathnasium Learning Center
+Role: Math Instructor
+Dates: Feb 2025 – Aug 2025
+I taught math to small groups of two or three students, adjusting explanations and practice problems to what each student needed help with.
+
+University of Illinois Urbana-Champaign, College of Education
+Role: Applied AI Developer
+Dates: Sep 2023 – May 2024
+I worked with Professor Asif Wilson to build a map app giving K–12 educators access to more than 1,000 cultural and historical resources. My work included a Python and ChatGPT-powered classification pipeline to organize the resources for the app.
+
+COMMUNITY
+---------
+
+Cornell Cybersecurity Club
+Role: Competition Team Member
+Dates: Sep 2025 – Present
+I compete with Cornell's cybersecurity team in Capture-the-Flag competitions, working on challenges in areas such as binary exploitation, cryptography, and reverse engineering. Our team placed first at BSides NYC CTF, and I've also competed in AmateursCTF, OSU CTF, and Buckeye CTF.
+
+
+6. CONTACT
+===========
+Heading: Contact
+
+I'm looking for summer 2027 internships in software engineering, data science, or research. If you'd like to talk about an opportunity or something I've worked on, feel free to email me.
+
+Email: haydenmfu@gmail.com
+Email action: Send an email
+Copy action: Copy email
+Copy confirmation: Email copied
+GitHub: https://github.com/haydenmfu
+LinkedIn: https://www.linkedin.com/in/hayden-fu
+
+Remove “A postcard from the desk” and “Let's compare notes.”
+
+
+7. RÉSUMÉ
+==========
+Heading: Résumé
+Primary action: Download résumé
+Secondary action: Open PDF
+No descriptive tagline needed; show the document directly below the actions.
+Use the supplied Hayden_Fu_Resume_Data_Analyst-6.pdf as the current document.
+
+
+8. RESEARCH PAGE CONTENT MAPPING
+================================
+Use the exact descriptions in section 5 for these corresponding research entries:
+- Algoverse LLM Research Group — Applied AI Engineer
+- Cornell University, Civil Engineering — Data Specialist
+- Cornell Geo Data — ML Research Engineer
+- Harvard Institute of Quantitative Social Sciences — Research Intern
+- Aspiring Scholars Directed Research Program — Independent LLM Researcher
+
+For the forecasting publication, the confirmed title is:
+Detecting Representational Forecast Drift in Long-Horizon Forecasting Agents
+
+Acceptance note:
+Accepted to the Interpreting Agent Behavior workshop at NeurIPS 2026.
+
+Do not imply that the workshop presentation has already taken place. Retain verified author lists, publication links, and other existing research entries. No additional Research-page introduction is supplied because that screenshot was not provided.
