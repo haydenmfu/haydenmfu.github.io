@@ -1,0 +1,35 @@
+[
+  {
+    "name": "projects",
+    "file": "projects-v3.png",
+    "prompt": "Edit input image 1 laptop website background, use input image 2 only as actual art STYLE reference. Recompose to a single near-full-view laptop SCREEN, filling almost all image. Smooth simplified cozy animation illustration with clear warm brown outlines and broad cel shading identical to reference, honey wood tiny outer rim, no textured ornate clutter. Landscape 1536x1024. Large front-facing black laptop bezel, rectangular perfectly flat blank CREAM screen bounded x=7%-93%, y=6%-89%. Only tiny narrow sliver of hinge and one cropped row of keyboard at bottom y=95%-100%; absolutely no large keyboard, trackpad or foreground area. Screen is the dominant reading area for HTML scrolling content. Only slim wood edges and one simple green leaf top corner. Preserve cream screen flat consistent color, no writing, icons, labels, text or logos. One laptop only.",
+    "reference": "public/Assets Masked/Base.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen edit"
+  },
+  {
+    "name": "resume",
+    "file": "resume-v3.png",
+    "prompt": "Edit input image 1 resume website background, use input image 2 as actual art STYLE reference. Remove the entire green folder, ochre tab, paperclip, cup and leaves. Replace folder with a SINGLE PLAIN blank cream paper sheet lying on warm honey wood, front-facing flat overhead completely unrotated, subtle brown outline and soft shadow. Landscape 1536x1024. Paper fills x=7%-93%, y=6%-94%, perfectly rectangular and unmarked; reading safe region x=11%-89%, y=10%-90%. Slim simple warm wood margin only. Style must match reference's smooth simplified cozy animation, broad cel shading, warm brown outlines and restrained minimal wood grain. No ornate texture, no folder, no border colored mat, no decor, no text or logos. This is a plain resume paper reading surface.",
+    "reference": "public/Assets Masked/Base.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen edit"
+  },
+  {
+    "name": "experience",
+    "file": "experience-v3.png",
+    "prompt": "Edit image 1 experience paper stack using image 2 as actual art STYLE reference. Rework into CSS nine-slice-friendly website background. Landscape 1536x1024. Flat overhead unrotated perfectly rectangular cream paper stack on honey-orange wood, paper outer rectangle x=7%-93%,y=7%-93%. Move small binder clip to UPPER LEFT corner entirely inside x=8%-16%,y=3%-15%. Remove all side index tabs, leaves, plants and objects. Three thin parallel offset paper edges and warm-brown outlines at outer perimeter. Entire large center is completely blank cream and uniform soft warm offwhite, no texture gradients. Straight left/right edges with no decorative features; plain straight top/bottom edges except corner clip. Used as stretchable border with corner clip preserved; no large central clip. Same smooth simplified cozy animation style as reference, broad restrained cel shading, no photoreal grain, no text or writing.",
+    "reference": "public/Assets Masked/Base.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen edit"
+  }
+]
