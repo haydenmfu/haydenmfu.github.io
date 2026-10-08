@@ -1,0 +1,80 @@
+[
+  {
+    "name": "projects",
+    "file": "projects.png",
+    "selectedRevision": "projects-v2.png",
+    "initialPrompt": "Use case: stylized-concept. Create a landscape 1536x1024 website background illustration, cozy hand-painted storybook desk style. Honey amber wood grain, creamy paper, muted forest green and teal accents, fine dark warm-brown outlines, soft golden upper-left light and gentle shadows, no photorealism. PROJECTS page: a straight-on symmetrical black ThinkPad-style laptop occupying nearly the full canvas, slightly top-down so large wide screen is exactly rectangular and facing viewer; tiny red trackpoint and compact keyboard at very bottom, black brown bezel. The screen is pale warm cream, completely blank, occupying x=12%-88% y=12%-72% with NO lines/icons/text. Honey wood desk at edges, tiny green leaf corner upper-left. Laptop fills canvas; not a distant room scene. No words letters numbers logos labels signatures or watermark. Leave screen uniformly light and quiet for live HTML text. Same aesthetic as a warm illustrated wooden study desk with forest-green books and cream stationery.",
+    "finalPrompt": "Use case: style-transfer. Input image 1 is the EDIT TARGET composition, input image 2 is the STYLE REFERENCE original illustrated homepage. Repaint image 1 faithfully in image 2's simplified soft cel-shaded animation illustration style, with clear warm brown outlines, broad smooth shading and minimally textured honey-orange wood. Keep the exact central object geometry, empty cream reading surfaces, dimensions and safe areas of image 1, but remove all ornate clutter: no lace, candles, floral patterns, vintage decoration, patterned ceramics, floral vines. Only simple green leaves at outer corners if needed. No extra objects. Match image 2's simple modern cozy desk visual language, not Victorian watercolor or photorealistic grain. Plain cream paper surfaces and muted teal covers. No words or added writing. Projects laptop must retain matte black body and blank cream screen. All text is live HTML later. Output landscape 1536x1024.",
+    "reference": "public/Assets Masked/Base.png",
+    "mode": "built-in image_gen style-transfer",
+    "dimensions": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "name": "research",
+    "file": "research.png",
+    "selectedRevision": "research-v2.png",
+    "initialPrompt": "Use case: stylized-concept. Landscape 1536x1024 custom website background. Cozy hand-painted storybook illustration, honey amber wooden desk, warm cream stationery, muted forest green and teal accents, fine dark warm-brown outlines, soft golden upper-left light, subtle painterly grain and gentle shadows. Flat overhead view, completely unrotated, horizontal rectangular edges. No words letters numbers logos labels signatures watermark or writing lines. RESEARCH page: an enormous open cream research notebook with dark green cover, two symmetrical blank pages, a subtle central binding at x=50%, fills x=6%-94%, y=7%-92%. Tiny stack of closed green and amber books at far upper-right outside notebook, tiny leafy plant at far upper-left. The empty cream pages are central and dominant, safe text regions x=12%-45% and 55%-88%, y=16%-82%. No decorations on writing surfaces.",
+    "finalPrompt": "Use case: style-transfer. Input image 1 is the EDIT TARGET composition, input image 2 is the STYLE REFERENCE original illustrated homepage. Repaint image 1 faithfully in image 2's simplified soft cel-shaded animation illustration style, with clear warm brown outlines, broad smooth shading and minimally textured honey-orange wood. Keep the exact central object geometry, empty cream reading surfaces, dimensions and safe areas of image 1, but remove all ornate clutter: no lace, candles, floral patterns, vintage decoration, patterned ceramics, floral vines. Only simple green leaves at outer corners if needed. No extra objects. Match image 2's simple modern cozy desk visual language, not Victorian watercolor or photorealistic grain. Plain cream paper surfaces and muted teal covers. No words or added writing. Projects laptop must retain matte black body and blank cream screen. All text is live HTML later. Output landscape 1536x1024.",
+    "reference": "public/Assets Masked/Base.png",
+    "mode": "built-in image_gen style-transfer",
+    "dimensions": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "name": "experience",
+    "file": "experience.png",
+    "selectedRevision": "experience-v2.png",
+    "initialPrompt": "Use case: stylized-concept. Landscape 1536x1024 custom website background. Cozy hand-painted storybook illustration, honey amber wooden desk, warm cream stationery, muted forest green and teal accents, fine dark warm-brown outlines, soft golden upper-left light, subtle painterly grain and gentle shadows. Flat overhead view, completely unrotated, horizontal rectangular edges. No words letters numbers logos labels signatures watermark or writing lines. EXPERIENCE page: enormous stack of horizontal cream looseleaf paper on honey wood, fills x=7%-93%, y=8%-94%, a small dark brass binder clip centered at very top, muted teal and ochre tabs on right edge only. Single uninterrupted totally blank cream paper surface x=13%-86%, y=20%-86%. Flat overhead, no perspective distortion. Narrow desk border. No decorations within writing surface.",
+    "finalPrompt": "Use case: style-transfer. Input image 1 is the EDIT TARGET composition, input image 2 is the STYLE REFERENCE original illustrated homepage. Repaint image 1 faithfully in image 2's simplified soft cel-shaded animation illustration style, with clear warm brown outlines, broad smooth shading and minimally textured honey-orange wood. Keep the exact central object geometry, empty cream reading surfaces, dimensions and safe areas of image 1, but remove all ornate clutter: no lace, candles, floral patterns, vintage decoration, patterned ceramics, floral vines. Only simple green leaves at outer corners if needed. No extra objects. Match image 2's simple modern cozy desk visual language, not Victorian watercolor or photorealistic grain. Plain cream paper surfaces and muted teal covers. No words or added writing. Projects laptop must retain matte black body and blank cream screen. All text is live HTML later. Output landscape 1536x1024.",
+    "reference": "public/Assets Masked/Base.png",
+    "mode": "built-in image_gen style-transfer",
+    "dimensions": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "name": "resume",
+    "file": "resume.png",
+    "selectedRevision": "resume-v2.png",
+    "initialPrompt": "Use case: stylized-concept. Landscape 1536x1024 custom website background. Cozy hand-painted storybook illustration, honey amber wooden desk, warm cream stationery, muted forest green and teal accents, fine dark warm-brown outlines, soft golden upper-left light, subtle painterly grain and gentle shadows. Flat overhead view, completely unrotated, horizontal rectangular edges. No words letters numbers logos labels signatures watermark or writing lines. RESUME page: enormous horizontal ivory resume sheet inside a dark forest-green document folder lying on honey wood, fills x=7%-93%, y=7%-94%. Small brass paperclip at upper-left border, thin forest green folder border visible around paper and a tiny ochre index tab at far right. Single uninterrupted totally blank cream sheet x=13%-86%, y=15%-86%. No decoration or marks within writing surface.",
+    "finalPrompt": "Use case: style-transfer. Input image 1 is the EDIT TARGET composition, input image 2 is the STYLE REFERENCE original illustrated homepage. Repaint image 1 faithfully in image 2's simplified soft cel-shaded animation illustration style, with clear warm brown outlines, broad smooth shading and minimally textured honey-orange wood. Keep the exact central object geometry, empty cream reading surfaces, dimensions and safe areas of image 1, but remove all ornate clutter: no lace, candles, floral patterns, vintage decoration, patterned ceramics, floral vines. Only simple green leaves at outer corners if needed. No extra objects. Match image 2's simple modern cozy desk visual language, not Victorian watercolor or photorealistic grain. Plain cream paper surfaces and muted teal covers. No words or added writing. Projects laptop must retain matte black body and blank cream screen. All text is live HTML later. Output landscape 1536x1024.",
+    "reference": "public/Assets Masked/Base.png",
+    "mode": "built-in image_gen style-transfer",
+    "dimensions": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "name": "about",
+    "file": "about.png",
+    "selectedRevision": "about-v2.png",
+    "initialPrompt": "Use case: stylized-concept. Landscape 1536x1024 custom website background. Cozy hand-painted storybook illustration, honey amber wooden desk, warm cream stationery, muted forest green and teal accents, fine dark warm-brown outlines, soft golden upper-left light, subtle painterly grain and gentle shadows. Flat overhead view, completely unrotated, horizontal rectangular edges. No words letters numbers logos labels signatures watermark or writing lines. ABOUT page: enormous open cream personal journal with dark teal-green cover, two symmetrical unruled blank pages, subtle central binding x=50%, fills x=6%-94%, y=7%-89%, green ribbon bookmark extends from bottom center. The empty cream pages are dominant, safe text regions x=12%-45% and 55%-88%, y=16%-79%. Narrow honey wood border around notebook. No decorations on writing surfaces.",
+    "finalPrompt": "Use case: style-transfer. Input image 1 is the EDIT TARGET composition, input image 2 is the STYLE REFERENCE original illustrated homepage. Repaint image 1 faithfully in image 2's simplified soft cel-shaded animation illustration style, with clear warm brown outlines, broad smooth shading and minimally textured honey-orange wood. Keep the exact central object geometry, empty cream reading surfaces, dimensions and safe areas of image 1, but remove all ornate clutter: no lace, candles, floral patterns, vintage decoration, patterned ceramics, floral vines. Only simple green leaves at outer corners if needed. No extra objects. Match image 2's simple modern cozy desk visual language, not Victorian watercolor or photorealistic grain. Plain cream paper surfaces and muted teal covers. No words or added writing. Projects laptop must retain matte black body and blank cream screen. All text is live HTML later. Output landscape 1536x1024.",
+    "reference": "public/Assets Masked/Base.png",
+    "mode": "built-in image_gen style-transfer",
+    "dimensions": [
+      1536,
+      1024
+    ]
+  },
+  {
+    "name": "contact",
+    "file": "contact.png",
+    "selectedRevision": "contact-v2.png",
+    "initialPrompt": "Use case: stylized-concept. Landscape 1536x1024 custom website background. Cozy hand-painted storybook illustration, honey amber wooden desk, warm cream stationery, muted forest green and teal accents, fine dark warm-brown outlines, soft golden upper-left light, subtle painterly grain and gentle shadows. Flat overhead view, completely unrotated, horizontal rectangular edges. No words letters numbers logos labels signatures watermark or writing lines. CONTACT page: enormous horizontal cream postcard atop a cream envelope on honey wood, postcard fills x=8%-94%, y=10%-86%. Tiny botanical green leaf postage stamp only at top-right x=83%-90%, y=15%-30%. Very subtle vertical center divider x=51%, from y=29%-76%. Completely empty cream writing region left x=14%-46%, y=19%-76%, and right x=57%-81%, y=34%-76%. Envelope visible only below and left edge. No postmarks or words.",
+    "finalPrompt": "Use case: style-transfer. Input image 1 is the EDIT TARGET composition, input image 2 is the STYLE REFERENCE original illustrated homepage. Repaint image 1 faithfully in image 2's simplified soft cel-shaded animation illustration style, with clear warm brown outlines, broad smooth shading and minimally textured honey-orange wood. Keep the exact central object geometry, empty cream reading surfaces, dimensions and safe areas of image 1, but remove all ornate clutter: no lace, candles, floral patterns, vintage decoration, patterned ceramics, floral vines. Only simple green leaves at outer corners if needed. No extra objects. Match image 2's simple modern cozy desk visual language, not Victorian watercolor or photorealistic grain. Plain cream paper surfaces and muted teal covers. No words or added writing. Projects laptop must retain matte black body and blank cream screen. All text is live HTML later. Output landscape 1536x1024.",
+    "reference": "public/Assets Masked/Base.png",
+    "mode": "built-in image_gen style-transfer",
+    "dimensions": [
+      1536,
+      1024
+    ]
+  }
+]
