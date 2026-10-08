@@ -15,7 +15,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     title: 'LLM Prediction Markets',
-    description: "How do an AI forecaster's earlier predictions shape its next one? I built a Python pipeline to bring together prediction-market data and news available at each forecast date. We evaluated three open-weight models on 100 Kalshi markets, each with 30 timestamped news steps, while varying how much of their own forecast history they could see. Linear probes and deliberately rewritten prior forecasts showed that this history can anchor later predictions and weaken internal representations of the outcome, with different effects across models. Our paper was accepted to the Interpreting Agent Behavior workshop at NeurIPS 2026.",
+    description: "I built a Python forecasting pipeline that combines prediction-market data, historical order books, timestamped news, and LLM inference. Time-aware retrieval uses embeddings and cross-encoder reranking to select relevant news without introducing future information. We tested three open-weight models across 100 Kalshi markets, using linear probes and altered prior forecasts to understand anchoring and drift. The work connects data engineering with model evaluation: making experiments reproducible and distinguishing reliable predictions from misleading confidence. Our paper was accepted to the Interpreting Agent Behavior workshop at NeurIPS 2026.",
     category: 'AI Research / Forecasting',
     tags: ['Python', 'LLMs', 'Kalshi', 'Linear Probes'],
     year: '2026',
@@ -26,7 +26,7 @@ export const projects: Project[] = [
   },
   {
     title: 'SASH: Search Across Six Hops',
-    description: "At Big Red Hacks 2026, we built a way to reach someone through friends of friends when you know their background but not their name. A search travels through personal referral links until someone opts in with an introduction; once the poster confirms the match, the successful chain shares a reward. We connected a Next.js web app, a Photon-powered iMessage agent, and Solana devnet payouts, with a reward split designed to remove the financial incentive for inserting fake referral hops. The prototype modeled banking flows with Nessie in mock mode and visualized network activity using replay data. SASH won Capital One's Nessie Track and the Solana Track.",
+    description: "We built a full-stack referral search platform at Big Red Hacks 2026 using Next.js, TypeScript, and PostgreSQL. A search moves through friends of friends until someone opts in with an introduction. I built interactive network visualizations and multi-hop search features to trace those connections, and co-developed the platform's iMessage and Solana devnet payout flow. SQL dashboards let us examine search propagation and reward strategies across one million simulated events. The prototype used Nessie in mock mode for banking flows and won Capital One's Nessie Track and the Solana Track.",
     category: 'Hackathon / Social Computing',
     tags: ['Next.js', 'TypeScript', 'Solana', 'PostgreSQL'],
     year: '2026',
@@ -34,8 +34,8 @@ export const projects: Project[] = [
   },
   {
     title: 'Irrigation Data Assimilation',
-    description: "I'm working on estimating irrigation from satellite soil-moisture observations and land-surface model outputs. The Python pipeline compares possible irrigation histories with the observations to estimate how much water was applied. Much of my work involves making those comparisons reliable: aligning datasets across time and location, filtering noisy observations, and testing calibration choices.",
-    category: 'ML / Water Systems',
+    description: "I built a Python pipeline that turns satellite observations, simulation outputs, and geospatial datasets into estimates of irrigation. Reusable modules handle spatial matching, time-series alignment, validation, and NetCDF extraction. I automated experiments on Cornell's SLURM cluster, from generating candidate inputs and launching simulations to scoring results against observations. The work centers on dependable data processing and experiment orchestration, with probabilistic sampling to refine estimates and temporal and geographic holdouts to evaluate bias correction.",
+    category: 'Data Pipelines / Scientific Computing',
     tags: ['Python', 'xarray', 'NetCDF', 'Geospatial'],
     year: '2026',
     pattern: 'dot-grid',
@@ -44,8 +44,8 @@ export const projects: Project[] = [
   },
   {
     title: 'Lake-Effect Snow Forecasting',
-    description: "With Cornell Geo Data, I'm working on correcting short-term weather forecasts using local sensor observations. I built a GAN-based model in Python and PyTorch that combines sensor data with numerical weather predictions. I also cleaned and validated the sensor time series used to evaluate the model.",
-    category: 'ML / Climate',
+    description: "I built reusable Python tools to extract, align, and validate weather-model outputs and sensor observations for forecast analysis. The pipeline samples locations, computes temperature and wind features, and reduces repeated spatial lookups. I also developed a PyTorch model to correct short-term forecasts, bringing data preparation and model evaluation into the same workflow.",
+    category: 'Data Engineering / ML',
     tags: ['Python', 'PyTorch', 'GAN', 'HRRR'],
     year: '2025',
     pattern: 'halftone',
@@ -65,7 +65,7 @@ export const projects: Project[] = [
   },
   {
     title: 'I3 Cultural Resources Map',
-    description: "Working with Professor Asif Wilson at the University of Illinois Urbana-Champaign, I built a map app to help K–12 educators find cultural and historical resources for their lessons. The app brings together more than 1,000 resources, with a Python and ChatGPT-powered classification pipeline to help organize them.",
+    description: "I built a map application that helps K–12 educators explore more than 1,000 cultural and historical resources. Working with Professor Asif Wilson at the University of Illinois Urbana-Champaign, I connected a JavaScript map interface with a Python and ChatGPT-powered classification pipeline. The project brought together data organization, applied AI, and a usable interface for finding teaching resources.",
     category: 'Web / Ed-Tech',
     tags: ['JavaScript', 'Maps API', 'ChatGPT'],
     year: '2024',

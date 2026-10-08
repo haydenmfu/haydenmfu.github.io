@@ -13,7 +13,7 @@ const browser = await chromium.launch({ headless: true, executablePath: process.
 const results = [];
 const baseURL = process.env.PREVIEW_URL || 'http://127.0.0.1:5174';
 for (const width of (process.env.QA_WIDTHS || '1440,1024,390,320').split(',').map(Number)) {
-  const page = await browser.newPage({ viewport: { width, height: 960 }, reducedMotion: 'reduce' });
+  const page = await browser.newPage({ viewport: { width, height: Number(process.env.QA_HEIGHT || 960) }, reducedMotion: 'reduce' });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   for (const view of ['desk', 'projects', 'research', 'about', 'experience', 'resume', 'contact']) {
@@ -47,24 +47,42 @@ await page.locator('.selector-projects').focus();
 await page.keyboard.press('Enter');
 await page.waitForURL('**/#projects');
 await page.waitForFunction(() => document.activeElement?.tagName === 'H1');
-assert.equal(await page.locator('.project-object h2').first().textContent(), 'LLM Prediction Markets');
+assert.equal(await page.locator('.laptop-reader').count(), 1);
+assert.equal(await page.locator('.screen-project h3').first().textContent(), 'LLM Prediction Markets');
 assert.equal(await page.getByRole('heading', { name: 'SASH: Search Across Six Hops' }).count(), 1);
+await page.locator('.laptop-scroll').focus();
+await page.keyboard.press('End');
+await page.waitForFunction(() => { const e = document.querySelector('.laptop-scroll'); return e.scrollTop > 0; });
 await page.keyboard.press('Escape');
 await page.waitForFunction(() => document.querySelector('.desk-page') === document.activeElement);
 await page.getByRole('navigation', { name: 'Desk index' }).getByRole('link', { name: 'Research', exact: true }).click();
 await page.waitForURL('**/#research');
 assert.match(await page.locator('.research-object').first().textContent(), /Primary research.*Linking Trajectory Drift/s);
 assert.equal(await page.locator('.research-object').first().getByRole('link').getAttribute('href'), 'https://openreview.net/forum?id=UXthrIAHqX');
+assert.equal(await page.locator('.research-object').count(), 1);
+assert.equal(await page.locator('.research-history').count(), 0);
+await page.getByRole('button', {name:'Homelessness policy'}).click();
+assert.match(await page.locator('.research-object h2').textContent(), /Encampment/);
+await page.getByRole('button', {name:'AI bias',exact:true}).click();
+assert.match(await page.locator('.research-object h2').textContent(), /ChatGPT/);
 await page.getByRole('navigation', { name: 'Content navigation' }).getByRole('link', { name: 'Experience', exact: true }).click();
 await page.getByRole('button', { name: 'Work', exact: true }).click();
 assert.equal(await page.evaluate(() => document.activeElement?.id), 'experience-work');
+await page.getByRole('navigation', { name: 'Content navigation' }).getByRole('link', { name: 'Resume', exact: true }).click();
+assert.equal(await page.getByRole('link', {name:'Download PDF'}).getAttribute('href'), '/resumes/Hayden-Fu-SWE.pdf');
+await page.getByRole('button', {name:'Flip to Data Analytics'}).click();
+assert.equal(await page.getByRole('link', {name:'Download PDF'}).getAttribute('href'), '/resumes/Hayden-Fu-Data-Analytics.pdf');
+assert.match(await page.locator('.resume-original-sheet img').getAttribute('src'), /data-analytics/);
+await page.getByRole('button', {name:'Readable text view'}).click();
+assert.match(await page.locator('.resume-readable').textContent(), /PROFESSIONAL SUMMARY/);
+await page.getByRole('button', {name:'Flip to Software Engineering'}).click();
+assert.match(await page.locator('.resume-readable').textContent(), /OCaml Chess/);
 await page.getByRole('navigation', { name: 'Content navigation' }).getByRole('link', { name: 'Contact', exact: true }).click();
 await page.getByRole('button', { name: 'Copy email', exact: true }).click();
 await page.getByRole('button', { name: 'Email copied', exact: true }).waitFor();
 assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'haydenmfu@gmail.com');
 assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior), 'auto');
-const pdf = await page.request.get(`${baseURL}/Hayden_Fu_Resume_Data_Analyst-6.pdf`);
-assert.equal(pdf.status(), 200);
+for (const file of ['Hayden-Fu-SWE.pdf','Hayden-Fu-Data-Analytics.pdf']) assert.equal((await page.request.get(`${baseURL}/resumes/${file}`)).status(), 200);
 for (const name of ['projects', 'research', 'about', 'experience', 'resume', 'contact']) {
   assert.equal((await page.request.get(`${baseURL}/subpage-art/${name}.png`)).status(), 200);
 }

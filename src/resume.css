@@ -1,0 +1,15 @@
+.reading-resume{background:#d9a169 url('/subpage-art/resume-wood-v3.png') center top / 1536px 1024px repeat-y;}
+.reading-resume .reading-footer{color:#304441;border-color:#a4754c;}
+.resume-folio{max-width:1000px;margin:auto;}
+.resume-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px;padding:18px;background:#faf0db;border:1px solid #b79a73;box-shadow:0 3px 9px #63482825;}
+.resume-version-group{display:flex;flex-wrap:wrap;gap:6px;}
+.resume-controls button{cursor:pointer;border:1px solid #9c8768;background:#fff9e9;color:#294c4c;padding:10px 14px;border-radius:3px;font-size:14px;font-weight:600;}
+.resume-controls button[aria-pressed=true]{background:#294c4c;color:#fff8e5;border-color:#294c4c;}
+.resume-file-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px;width:100%;font-size:14px;}
+.resume-file-actions a{color:#294c4c;font-weight:600;text-underline-offset:4px;}
+.resume-original-sheet{background:white;box-shadow:0 12px 28px #503a3650;border-radius:0;animation:paper-turn .25s ease-out;}
+.resume-original-sheet>img{width:100%;height:auto;display:block;}
+.resume-readable{padding:clamp(22px,5vw,58px);color:#202b32;}
+.resume-readable>div{white-space:pre-wrap;font-size:16px;line-height:1.7;overflow-wrap:anywhere;}
+@keyframes paper-turn{from{opacity:.6;transform:perspective(1400px) rotateY(-5deg)}to{opacity:1;transform:none}}
+@media(max-width:600px){.resume-controls{padding:13px;gap:12px;}.resume-controls button{font-size:13px;padding:10px;}.resume-file-actions{gap:12px;font-size:13px;}}

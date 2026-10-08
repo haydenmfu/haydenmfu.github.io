@@ -503,3 +503,49 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 @media(min-width:761px) and (max-width:1050px){
  .research-object{max-width:760px;background-image:linear-gradient(to bottom,transparent 0 260px,#fbefd2 510px),url('/subpage-art/research.png');background-size:auto,300% auto;background-position:0 0,18% top;padding-top:270px;padding-left:65px;padding-right:65px;}
 }
+
+/* One object per destination, with natural page flow or an explicit screen scroll. */
+.reading-projects .reading-shell{width:min(calc(100% - 24px),1320px);margin:10px auto;}
+.reading-projects .reading-footer{padding-top:8px;padding-bottom:12px;border:0;}
+.laptop-reader{position:relative;width:min(100%,calc((100dvh - 130px)*1.5));margin:auto;aspect-ratio:3/2;}
+.laptop-reader-art{display:block;width:100%;height:100%;object-fit:contain;}
+.laptop-scroll{position:absolute;left:10%;right:10%;top:9%;bottom:12%;overflow-y:auto;overscroll-behavior:contain;padding:clamp(20px,3vw,42px);scrollbar-color:#526257 #e7dcc2;scrollbar-width:thin;color:#244d49;}
+.laptop-scroll:focus-visible{outline:3px solid #b2764c;outline-offset:3px;}
+.reading-shell .screen-heading{font-size:36px;margin:0 0 22px;}
+.screen-project{border-radius:0;padding:24px 0;border-top:1px solid #a89c80;}
+.reading-shell .screen-project h3{font-size:27px;line-height:1.2;color:#294b49;margin:10px 0 15px;}
+.screen-project p{margin:0;max-width:72ch;}
+.paper-picker{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:0 0 18px;}
+.paper-picker button{border:1px solid #9d896b;padding:10px 16px;background:#f5ecd5;color:#345451;border-radius:3px;font-weight:700;cursor:pointer;}
+.paper-picker button[aria-pressed="true"]{background:#355b56;color:#fff3d7;}
+.reading-experience .reading-shell{background:#fff7e5;border:solid transparent;border-width:110px 70px 70px;border-image:url('/subpage-art/experience.png') 160 210 150 210 fill / 110px 70px 70px stretch;}
+.reading-experience .chapter-art{height:auto;overflow:visible;margin:0;}
+.reading-experience .chapter-art>img{display:none;}
+.reading-experience .chapter-title{position:static;text-align:left;margin-bottom:28px;}
+.reading-experience .chapter-content{width:100%;margin:0;padding:0;background:transparent;box-shadow:none;border:0;}
+.reading-experience .chapter-content::after{display:none;}
+.reading-resume .reading-shell{width:min(calc(100% - 28px),1120px);}
+.reading-resume .chapter-art{height:auto;margin:0 0 24px;overflow:visible;}
+.reading-resume .chapter-art>img{display:none;}
+.reading-resume .chapter-title{position:static;text-align:center;}
+.reading-resume .chapter-content{width:100%;padding:0;margin:0;background:transparent;border:0;box-shadow:none;}
+.reading-resume .chapter-content::after{display:none;}
+.reading-resume{background:#d5ad78 url('/subpage-art/resume-v3.png') center top/cover fixed;}
+@media(max-width:760px){
+ .laptop-reader{width:100%;height:calc(100dvh - 150px);min-height:430px;aspect-ratio:auto;background:#f4ebcf;border:10px solid #292e2d;border-top-width:20px;border-bottom-width:18px;border-radius:9px;}
+ .laptop-reader-art{display:none;}
+ .laptop-scroll{inset:0;padding:24px 20px;}
+ .reading-shell .screen-heading{font-size:31px;}
+ .reading-shell .screen-project h3{font-size:25px;}
+ .reading-projects .reading-shell{margin:12px auto;}
+ .paper-picker{gap:7px;}
+ .paper-picker button{font-size:12px;padding:10px;}
+ .reading-experience .reading-shell{border-width:65px 24px 35px;border-image-width:65px 24px 35px;}
+ .reading-experience .chapter-art,.reading-experience .chapter-content{width:100%;padding:0;}
+ .reading-experience .chapter-title{margin-bottom:22px;}
+ .reading-resume .chapter-art,.reading-resume .chapter-content{width:100%;padding:0;}
+ .postcard-view{background-position:0 0,18% top;}
+}
+@media(min-width:761px){.laptop-scroll{top:15%;bottom:14%;}}
+.reading-experience .reading-shell{border-image-source:url('/subpage-art/experience-v3.png');border-image-slice:180 180 150 280 fill;border-width:100px 65px 65px 100px;border-image-width:100px 65px 65px 100px;}
+@media(max-width:760px){.reading-experience .reading-shell{border-width:65px 22px 35px 34px;border-image-width:65px 22px 35px 34px;}}
