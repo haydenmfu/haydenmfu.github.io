@@ -49,7 +49,13 @@ export default function App() {
   }, [view]);
   return <div className="workspace-app">
     {view === 'desk' ? <main className="desk-page" ref={deskFocus} tabIndex={-1}>
-      <div className="scene-topline"><span>HAYDEN FU / RESEARCH WORKSPACE</span><span>ITHACA, NEW YORK · 2026</span></div>
+      <div className="scene-topline">
+        <span className="brand-mark">
+          <img src="/snorlax-logo.png" alt="" width={28} height={28} className="brand-logo" draggable={false} />
+          HAYDEN FU / RESEARCH WORKSPACE
+        </span>
+        <span>ITHACA, NEW YORK · 2026</span>
+      </div>
       <div className="desk-intro"><h1>Hayden Fu</h1><p>{about.intro}</p></div>
       <div className="workspace-illustration">
         <img className="workspace-art" src="/Assets%20Masked/Base.png" alt="Hayden's sunlit desk with a laptop labeled Projects, books labeled Research, notebook, papers, postcard, resume drawer, and sleeping Snorlax" width="2846" height="1602" draggable={false} />
@@ -59,7 +65,13 @@ export default function App() {
       </div>
       <nav className="desk-index" aria-label="Desk index"><span>EXPLORE</span>{views.map(v => <a href={`#${v}`} key={v}>{labels[v]}</a>)}</nav>
     </main> : <main className={`reading-view reading-${view}`}>
-      <header className="reading-header"><a href="#" className="return-link">Back to desk</a><nav aria-label="Content navigation">{views.map(v => <a key={v} href={`#${v}`} aria-current={view === v ? 'page' : undefined}>{labels[v]}</a>)}</nav></header>
+      <header className="reading-header">
+        <a href="#" className="return-link brand-mark">
+          <img src="/snorlax-logo.png" alt="" width={28} height={28} className="brand-logo" draggable={false} />
+          Back to desk
+        </a>
+        <nav aria-label="Content navigation">{views.map(v => <a key={v} href={`#${v}`} aria-current={view === v ? 'page' : undefined}>{labels[v]}</a>)}</nav>
+      </header>
       <div className="reading-shell">{view === 'about' || view === 'contact' || view === 'projects' ? <h1 className="sr-only" ref={headingRef} tabIndex={-1}>{labels[view]}</h1> : <div className="chapter-art"><img src={`/subpage-art/${view}.png`} alt="" width="1536" height="1024" /><div className="chapter-title"><div className="reading-kicker">HAYDEN FU / {labels[view].toUpperCase()}</div><h1 ref={headingRef} tabIndex={-1}>{labels[view]}</h1></div></div>}<div className="chapter-content"><Content view={view} /></div></div>
       <footer className="reading-footer"><a href="#">Back to desk</a><span>© 2026 Hayden Fu</span></footer>
     </main>}
