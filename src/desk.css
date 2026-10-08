@@ -8,7 +8,9 @@ button { font:inherit; }
 button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offset:4px; }
 .workspace-app { min-height:100vh; }
 .desk-page { min-height:100vh; padding:18px clamp(16px,3vw,48px) 12px; background:radial-gradient(ellipse at 50% 0,#fff8e7,#e7ddc7 74%); }
-.scene-topline { max-width:1500px; margin:0 auto 14px; display:flex; justify-content:space-between; gap:15px; color:#5b716c; font:700 11px 'DM Sans',sans-serif; letter-spacing:.2em; }
+.scene-topline { max-width:1500px; margin:0 auto 14px; display:flex; justify-content:space-between; align-items:center; gap:15px; color:#5b716c; font:700 11px 'DM Sans',sans-serif; letter-spacing:.2em; }
+.brand-mark { display:inline-flex; align-items:center; gap:10px; min-width:0; }
+.brand-logo { width:28px; height:28px; object-fit:contain; flex-shrink:0; letter-spacing:0; }
 .desk-scene { position:relative; width:min(100%,1500px); height:min(76vw,760px); min-height:650px; margin:auto; overflow:hidden; border:9px solid #80553d; border-radius:18px; background:radial-gradient(ellipse at 46% 25%,rgba(255,237,193,.55),transparent 55%),repeating-linear-gradient(91deg,transparent 0 125px,rgba(116,65,37,.1) 126px 128px,transparent 130px 247px),linear-gradient(140deg,#d5a16e,#b78058 47%,#a06c4b); box-shadow:0 20px 0 #754d37,0 35px 45px #5949385c,inset 0 0 95px #78482b60; isolation:isolate; }
 .desk-grain { position:absolute; inset:0; pointer-events:none; opacity:.26; background:repeating-linear-gradient(174deg,transparent 0 32px,#744a3144 33px,#edd2a768 34px,transparent 35px 75px); mix-blend-mode:multiply; }
 .scene-object { position:absolute; z-index:3; padding:0; border:0; background:transparent; color:var(--deep); cursor:pointer; text-align:left; transition:transform .35s cubic-bezier(.2,.8,.2,1),filter .3s; }

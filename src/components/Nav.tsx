@@ -36,9 +36,20 @@ export function Nav() {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="font-display font-bold text-ink text-sm hover:text-accent transition-colors"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label={`${profile.name} home`}
         >
-          {profile.initials}<span className="text-accent">.</span>
+          <img
+            src="/snorlax-logo.png"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain"
+            draggable={false}
+          />
+          <span className="font-display font-bold text-ink text-sm">
+            {profile.initials}<span className="text-accent">.</span>
+          </span>
         </button>
 
         {/* Desktop nav */}
