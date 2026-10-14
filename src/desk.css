@@ -57,7 +57,7 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .scene-tin { z-index:7; right:4%; bottom:8%; width:130px; height:105px; transform:rotate(-8deg); }.tin-lid { position:absolute; top:8%; width:100%; height:34%; border:4px solid #586b60; border-radius:50%; background:#c2866c; }.tin-body { position:absolute; top:24%; width:100%; height:69%; display:flex; align-items:center; justify-content:center; flex-direction:column; border:4px solid #586b60; border-radius:8px 8px 26px 26px; background:#d7987c; color:#f9ead0; font-size:22px; box-shadow:6px 8px #63442d66; }.tin-body small { font-size:11px; font-weight:800; letter-spacing:.12em; color:#273f3c; }
 .scene-postcard { right:3%; top:4%; width:18%; min-width:165px; height:20%; min-height:110px; padding:17px; transform:rotate(11deg); background:#fff6e1; border:2px solid #a88c70; box-shadow:5px 8px #67482f80; }.scene-postcard .object-label { display:block; margin-top:20px; }.scene-postcard span:last-child{font:600 13px 'Fraunces',serif;}.postmark { position:absolute; right:14px; top:12px; display:grid; place-items:center; width:42px; height:48px; border:2px dashed #8b745f; color:#b7775d; }
 .scene-drawer { z-index:6; right:16%; bottom:0; width:29%; height:10%; min-height:65px; }.drawer-paper { position:absolute; left:18%; bottom:60%; width:63%; height:65px; padding:12px; background:#faf6e8; border:1px solid #7c796c; font-size:10px; font-weight:700; transform:rotate(2deg); transition:transform .3s; }.scene-drawer:hover .drawer-paper{transform:translateY(-18px) rotate(2deg);}.drawer-front{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:14px; background:linear-gradient(#a97450,#8b5a3f); border:3px solid #72462f; box-shadow:0 -4px #65402c; color:#fff2d6;}.drawer-front .object-label{color:#fff2d6;}.drawer-pull{width:34px;height:12px;border:3px solid #ddc399;border-radius:50%;}
-.desk-index { max-width:1500px; margin:35px auto 0; padding:14px 18px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 24px; background:#f4ead4; border-top:2px solid #9e8d6b; border-bottom:2px solid #9e8d6b; box-shadow:0 4px #b5a68a55; }.desk-index span { color:#697268; font-size:10px; letter-spacing:.16em; font-weight:700; margin-right:auto; }.desk-index a { font-size:13px; font-weight:700; text-decoration:none; border-bottom:1px solid #8ba29a; }.desk-index a:hover { color:#a95943; }
+.desk-index { max-width:1500px; margin:35px auto 0; padding:14px 18px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 24px; background:#f4ead4; border-top:2px solid #9e8d6b; border-bottom:2px solid #9e8d6b; box-shadow:0 4px #b5a68a55; }.desk-index span { color:#697268; font-size:10px; letter-spacing:.16em; font-weight:700; margin-right:auto; }.desk-index a { font-size:13px; font-weight:700; text-decoration:none; border-bottom:1px solid #8ba29a; }.desk-index a { transition:color 150ms ease-out; }@media(hover:hover){.desk-index a:hover { color:#a95943; }}
 .desk-footnote { text-align:center; margin:22px 0 8px; font:500 13px 'Fraunces',serif; color:#6d716a; }
 .reading-view { min-height:100vh; background:radial-gradient(circle at 10% 0,#fdf9ec,#e9dfcb 80%); }
 .reading-header { position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:25px; padding:13px clamp(20px,4vw,60px); background:#f8f1dfed; border-bottom:2px solid #c3ad8c; backdrop-filter:blur(8px); }.reading-header nav { display:flex; flex-wrap:wrap; gap:6px 18px; }.reading-header a{ text-decoration:none; font-size:13px; font-weight:700; }.reading-header nav a[aria-current="page"]{color:#a95f49; border-bottom:2px solid #a95f49;}.return-link { white-space:nowrap; }
@@ -261,9 +261,10 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .workspace-illustration { position:relative;width:min(100%,1500px);margin:auto;overflow:hidden;border-radius:8px;box-shadow:0 18px 35px #4b392f52;isolation:isolate; }
 .workspace-art { display:block;width:100%;height:auto;user-select:none; }
 .workspace-selectors { position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none; }
-.workspace-selector { cursor:pointer;pointer-events:visiblePainted;outline:none; }
-.workspace-selector path { fill:#fff;fill-opacity:.001;stroke:#fff;stroke-opacity:0;stroke-width:4;stroke-linejoin:round;vector-effect:non-scaling-stroke;transition:fill-opacity .18s,stroke-opacity .18s; }
-.workspace-selector:hover path,.workspace-selector:focus-visible path { fill-opacity:.075;stroke-opacity:1;filter:drop-shadow(0 1px 2px #3a241ca8); }
+.workspace-selector { cursor:pointer;pointer-events:visiblePainted;outline:none;-webkit-tap-highlight-color:transparent; }
+.workspace-selector path { fill:#fff;fill-opacity:.001;stroke:#fff;stroke-opacity:0;stroke-width:4;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 2px #3a241ca8);transition:fill-opacity 150ms ease-out,stroke-opacity 150ms ease-out; }
+.workspace-selector:focus-visible path { fill-opacity:.075;stroke-opacity:1; }
+@media(hover:hover){.workspace-selector:hover path { fill-opacity:.075;stroke-opacity:1; }}
 @media(max-width:600px){.desk-page{min-height:0;}.workspace-illustration{border-radius:5px;box-shadow:0 8px 18px #4b392f42;}.workspace-selector path{stroke-width:3;}.desk-index a{display:inline-flex;align-items:center;min-height:34px;}}
 
 .reading-contact .reading-shell{width:min(100% - 40px,1200px);padding:0;border:0;outline:0;background:transparent;box-shadow:none;}
@@ -277,7 +278,8 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .postcard-view h2{margin:1.2cqw 0 1.5cqw;font-size:clamp(25px,3.4cqw,45px);line-height:1.12;color:#574738;}
 .postcard-view p{max-width:none;margin:0 0 1.2cqw;font-size:clamp(13px,1.45cqw,18px);line-height:1.48;color:#604f43;}
 .postcard-links a{font-size:clamp(14px,1.7cqw,21px);font-weight:700;color:#315b59;text-decoration-thickness:1px;text-underline-offset:4px;}
-.postcard-links a:hover,.postcard-links a:focus-visible{color:#a3533e;}
+.postcard-links a:focus-visible{color:#a3533e;}
+@media(hover:hover){.postcard-links a:hover{color:#a3533e;}}
 .postcard-view .postcard-stamp{position:absolute;left:81%;right:auto;top:15%;width:12%;height:21%;box-sizing:border-box;display:grid;place-content:center;padding:0;border:3px dashed #aa7a62;background:#f4e8cf;box-shadow:0 0 0 .8cqw #f4e8cf;text-align:center;color:#a76952;font:700 clamp(26px,3.8cqw,46px)/1 'Fraunces',serif;transform:rotate(8deg);z-index:1;}
 .postcard-view .postcard-stamp small{font:700 clamp(8px,.8cqw,11px) 'DM Sans',sans-serif;}
 @media(max-width:600px){.reading-contact .reading-shell{width:calc(100% - 20px);margin:18px auto 50px;}}
@@ -287,9 +289,7 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .desk-intro p{max-width:570px;margin:0;font-size:clamp(13px,1.25vw,16px);line-height:1.5;}
 .project-entry ul{padding-left:19px;margin:8px 0 16px;}
 .project-entry li{margin-bottom:8px;}
-.postcard-email{font-size:clamp(12px,1.45cqw,18px);font-weight:700;color:#604f43;}
-.postcard-links button{padding:0;border:0;background:none;color:#315b59;font:700 clamp(14px,1.7cqw,21px) 'DM Sans',sans-serif;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;cursor:pointer;}
-.postcard-links button:hover,.postcard-links button:focus-visible{color:#a3533e;}
+
 .postcard-view .postcard-links{gap:clamp(4px,.8cqw,10px);}
 @media(max-width:600px){.desk-intro{display:block;padding:0 3px;margin-bottom:14px;}.desk-intro p{margin-top:6px;}}
 
@@ -344,9 +344,7 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .project-entry p,.paper-entry p,.experience-entry p{max-width:72ch;}
 .featured-paper{border-left:3px solid #9e6550;padding-left:22px;}
 .featured-paper .eyebrow{color:#85503d;}
-.experience-tabs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 30px;}
-.experience-tabs button{border:1px solid #a99271;border-radius:3px;background:#e9dcc0;color:#345451;padding:10px 16px;font-weight:700;cursor:pointer;box-shadow:0 2px #bda989;}
-.experience-tabs button:hover{background:#dfceb0;}
+
 .manuscript section{scroll-margin-top:130px;}
 .manuscript section:focus{outline:none;}
 .manuscript section:focus-visible{outline:2px solid #9e6550;outline-offset:10px;}
@@ -370,7 +368,7 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .postcard-view .postcard-links{margin:0;gap:clamp(8px,1cqw,13px);}
 .postcard-view p{font-size:clamp(14px,1.45cqw,17px);line-height:1.6;}
 .postcard-view h2{font-size:clamp(26px,3.4cqw,42px);}
-.postcard-view .postcard-links a,.postcard-links button{font-size:clamp(14px,1.6cqw,18px);}
+.postcard-view .postcard-links a{font-size:clamp(14px,1.6cqw,18px);}
 @media(max-width:1199px){
   .reading-about .reading-shell{max-width:760px;}
   .about-book{aspect-ratio:auto;display:block;min-height:0;padding:80px clamp(32px,8vw,74px) 55px;background:linear-gradient(to bottom,transparent 0 200px,#fcf2da 410px),url('/subpage-art/about.png') 18% top/240% auto no-repeat,#fcf2da;box-shadow:3px 5px #c2b08e,0 15px 30px #58493026;border:1px solid #bfad8e;border-radius:7px;}
@@ -399,13 +397,12 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
   .postcard-view p{font-size:16px;line-height:1.7;margin-bottom:26px;}
   .postcard-view .postcard-links{padding-top:24px;border-top:1px solid #bda98b;gap:14px;}
   .postcard-view .eyebrow{font-size:11px;}
-  .postcard-email{font-size:16px;}
-  .postcard-view .postcard-links a,.postcard-links button{font-size:16px;min-height:30px;}
+  .postcard-view .postcard-links a{font-size:16px;min-height:30px;}
   .about-book{padding:68px 28px 34px;}
   .about-facts dl{grid-template-columns:85px 1fr;}
   .featured-paper{padding-left:16px;}
 }
-.reading-shell h2,.reading-shell h3,.postcard-email{overflow-wrap:anywhere;}
+.reading-shell h2,.reading-shell h3{overflow-wrap:anywhere;}
 
 /* Each object supplies a different reading surface. The opening entry sits within
    the illustrated object; only its quiet material continues for longer content. */
@@ -422,7 +419,6 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .reading-projects .text-link{color:#f0c494;}
 .reading-research .chapter-content{width:78%;padding-left:clamp(36px,6vw,78px);background:linear-gradient(90deg,#9e815a 0 5px,#d4c4a4 6px,#eee0c4 16px,#fff5dd 36px,#fcf1d7 97%,#d0bd97);border:1px solid #b7a17c;border-radius:0 5px 5px 0;box-shadow:5px 5px #d5c7aa,8px 8px #b8a17a,0 18px 26px #5a453425;}
 .reading-experience .chapter-content{width:77%;background:linear-gradient(100deg,#f5eddc,#fff9ec 48%,#f2e7d0);border-top:3px solid #a4a58f;box-shadow:5px 7px #e3d8bf,6px 8px 0 1px #bcae92,11px 13px #f5ebd6,12px 14px 0 1px #bcae92,0 20px 28px #5a453425;}
-.reading-experience .experience-tabs{margin-top:0;}
 .reading-resume .chapter-content{width:76%;background:#fffdf6;border-color:#cfc8b8;box-shadow:0 7px 20px #54483a30;}
 @media(max-width:760px){
  .chapter-title{top:15%;left:12%;right:12%;}
@@ -515,9 +511,6 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 .screen-project{border-radius:0;padding:24px 0;border-top:1px solid #a89c80;}
 .reading-shell .screen-project h3{font-size:27px;line-height:1.2;color:#294b49;margin:10px 0 15px;}
 .screen-project p{margin:0;max-width:72ch;}
-.paper-picker{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:0 0 18px;}
-.paper-picker button{border:1px solid #9d896b;padding:10px 16px;background:#f5ecd5;color:#345451;border-radius:3px;font-weight:700;cursor:pointer;}
-.paper-picker button[aria-pressed="true"]{background:#355b56;color:#fff3d7;}
 .reading-experience .reading-shell{background:#fff7e5;border:solid transparent;border-width:110px 70px 70px;border-image:url('/subpage-art/experience.png') 160 210 150 210 fill / 110px 70px 70px stretch;}
 .reading-experience .chapter-art{height:auto;overflow:visible;margin:0;}
 .reading-experience .chapter-art>img{display:none;}
@@ -538,8 +531,6 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
  .reading-shell .screen-heading{font-size:31px;}
  .reading-shell .screen-project h3{font-size:25px;}
  .reading-projects .reading-shell{margin:12px auto;}
- .paper-picker{gap:7px;}
- .paper-picker button{font-size:12px;padding:10px;}
  .reading-experience .reading-shell{border-width:65px 24px 35px;border-image-width:65px 24px 35px;}
  .reading-experience .chapter-art,.reading-experience .chapter-content{width:100%;padding:0;}
  .reading-experience .chapter-title{margin-bottom:22px;}
@@ -549,3 +540,253 @@ button:focus-visible, a:focus-visible { outline:3px solid #f5bb56; outline-offse
 @media(min-width:761px){.laptop-scroll{top:15%;bottom:14%;}}
 .reading-experience .reading-shell{border-image-source:url('/subpage-art/experience-v3.png');border-image-slice:180 180 150 280 fill;border-width:100px 65px 65px 100px;border-image-width:100px 65px 65px 100px;}
 @media(max-width:760px){.reading-experience .reading-shell{border-width:65px 22px 35px 34px;border-image-width:65px 22px 35px 34px;}}
+
+/* Polish pass: one continuous room. Matching backdrop, object captions, a zoom into whatever was opened. */
+html,html body{background:#c9b998;}
+.desk-page:focus{outline:none;}
+@media(max-width:600px){.desk-page{min-height:100dvh;}}
+
+/* Desk caption: a small paper tag naming where an object leads. Opacity only; it tracks every hover. */
+.desk-caption{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;transform:translate(-50%,calc(-100% - 10px));background:#fff8e7;color:#23494c;border-radius:4px;box-shadow:0 1px 0 #c9b38d,0 6px 14px #3a241c40;font:700 12px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 150ms ease-out;}
+.desk-caption[data-visible="true"]{opacity:1;}
+.desk-caption span{color:#a95f49;}
+@media(max-width:600px){.desk-caption{display:none;}}
+
+/* First arrival on the desk: title, introduction, then the scene. Runs once per visit. */
+@keyframes settle-in{from{opacity:0;transform:translateY(12px);filter:blur(4px);}}
+@media(prefers-reduced-motion:no-preference){
+ .play-intro :is(.workspace-illustration,.intro-card){animation:settle-in 300ms ease-out both;}
+ .play-intro .intro-card{animation-delay:200ms;}
+}
+
+/* Opening an object zooms the desk toward it; closing settles back out toward the same object.
+   Reduced motion keeps the browser's plain cross-fade. */
+@keyframes vt-into-object{to{opacity:0;transform:scale(1.18);filter:blur(4px);}}
+@keyframes vt-page-rise{from{opacity:0;transform:translateY(12px);filter:blur(4px);}}
+@keyframes vt-page-leave{to{opacity:0;transform:translateY(-12px);filter:blur(4px);}}
+@keyframes vt-desk-return{from{opacity:0;transform:scale(1.18);filter:blur(4px);}}
+@media(prefers-reduced-motion:no-preference){
+ ::view-transition-old(root),::view-transition-new(root){transform-origin:var(--vt-origin,50% 30%);animation-fill-mode:both;mix-blend-mode:normal;}
+ html[data-vt="enter"]::view-transition-old(root){animation:vt-into-object 300ms cubic-bezier(0.2,0,0,1) both;}
+ html[data-vt="enter"]::view-transition-new(root){animation:vt-page-rise 300ms ease-out 100ms both;}
+ html[data-vt="exit"]::view-transition-old(root){animation:vt-page-leave 150ms ease-out both;}
+ html[data-vt="exit"]::view-transition-new(root){animation:vt-desk-return 300ms cubic-bezier(0.2,0,0,1) both;}
+}
+
+/* Header links and controls: quick color feedback, a firm press. */
+.reading-header a{transition:color 150ms ease-out;}
+@media(hover:hover){.reading-header a:hover{color:#a95f49;}}
+
+/* Illustrated objects sit on the page the way the desk does: soft corners, the same lift. */
+.laptop-reader-art,.research-object .object-background,.about-book-image{border-radius:8px;box-shadow:0 18px 35px #4b392f52;}
+@media(min-width:761px){.postcard-view{border-radius:8px;box-shadow:0 18px 35px #4b392f52;}}
+
+/* ───────── Phase 1: the website is the desk ─────────
+   No page chrome. Art covers the window; everything visible is an object. Stage mode needs a
+   landscape window big enough for text on the art; smaller or portrait windows keep the flowing
+   layouts above, minus the menus. */
+
+/* Navigation lives off-screen until a keyboard reaches it, then appears as a note card. */
+.site-nav{position:fixed;z-index:60;top:14px;left:14px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px 18px 12px;background:#fff8e7;color:#23494c;border-radius:4px;box-shadow:0 1px 0 #c9b38d,0 10px 24px #3a241c55;}
+.site-nav-title{margin-bottom:6px;color:#8a6956;font:700 10px 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;}
+.site-nav a{padding:4px 2px;font:600 15px 'DM Sans',sans-serif;text-decoration:none;}
+.site-nav a[aria-current="page"]{color:#a95f49;}
+.site-nav:not(.site-nav-desk):not(:focus-within){position:fixed;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;box-shadow:none;}
+
+/* Intro: a handwritten-name card. Taped to the window in stage mode, a plain header otherwise. */
+.intro-card{width:min(100%,1500px);margin:0 auto 20px;color:#28494a;}
+.intro-card h1{margin:0;font:700 clamp(34px,3.6vw,52px)/1 'Caveat',cursive;color:#23494c;}
+.intro-card p{max-width:570px;margin:6px 0 0;font-size:clamp(13px,1.25vw,16px);line-height:1.5;}
+.intro-card small{display:block;margin-top:8px;color:#7b6a55;font:700 10px 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;}
+
+/* Fallback desk (portrait or small windows): the explore list sits under the scene. */
+@media not all and (min-width:1000px) and (min-aspect-ratio:13/10){
+ .desk-page{display:flex;flex-direction:column;}
+ .desk-page .stage-viewport{order:1;}
+ .site-nav-desk{order:2;position:static;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 18px;width:min(100%,1500px);margin:20px auto 0;padding:14px 18px;border-radius:0;background:#ede2cb;border-top:2px solid #9e8d6b;border-bottom:2px solid #9e8d6b;box-shadow:0 4px #b5a68a55;}
+ .site-nav-desk .site-nav-title{flex-basis:100%;margin:0;}
+ .site-nav-desk a{display:inline-flex;align-items:center;min-height:34px;font-size:14px;font-weight:700;border-bottom:1px solid #8ba29a;}
+}
+
+/* The way back: Snorlax peeking up from the bottom-left corner. */
+.snorlax-peek{position:fixed;z-index:40;left:22px;bottom:-10px;width:136px;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:translate 150ms ease-out;}
+.snorlax-peek img{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 6px #2b1d1670);}
+.peek-tag{position:absolute;left:calc(100% + 4px);bottom:34px;padding:5px 9px;background:#fff8e7;color:#23494c;border-radius:4px;box-shadow:0 1px 0 #c9b38d,0 6px 14px #3a241c40;font:700 11px/1 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;opacity:0;transition:opacity 150ms ease-out;}
+.snorlax-peek:focus-visible .peek-tag{opacity:1;}
+@media(hover:hover){.snorlax-peek:hover .peek-tag{opacity:1;}}
+@media(hover:none){.peek-tag{opacity:1;}}
+@media(prefers-reduced-motion:no-preference){.snorlax-peek:focus-visible{translate:0 -12px;}}
+@media(prefers-reduced-motion:no-preference) and (hover:hover){.snorlax-peek:hover{translate:0 -12px;}}
+@media(max-width:760px){.snorlax-peek{left:12px;width:96px;}.peek-tag{bottom:24px;}.reading-view{padding-bottom:64px;}}
+
+/* Flowing objects run edge to edge: the clipboard frame is the window edge; the résumé sits on wood. */
+.reading-experience .reading-shell{width:100%;max-width:none;margin:0;min-height:100dvh;padding:56px clamp(24px,7vw,140px) 110px;}
+.reading-resume{padding:44px 0 110px;}
+.reading-resume .reading-shell{margin:0 auto;}
+.object-region{position:absolute;inset:0;pointer-events:none;}
+.stage-viewport img{pointer-events:none;user-select:none;}
+
+/* Stage mode */
+@media (min-width:1000px) and (min-aspect-ratio:13/10){
+ html:has(.stage-viewport){overflow:hidden;}
+ .site-nav-desk:not(:focus-within){position:fixed;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;box-shadow:none;}
+ .stage-viewport{position:fixed;inset:0;overflow:hidden;background:#6d452c;}
+ .stage-viewport .stage{
+  --W:max(100vw, calc(100dvh * var(--ar)));
+  --H:calc(var(--W) / var(--ar));
+  position:absolute;left:0;top:0;width:var(--W);height:var(--H);min-width:0;max-width:none;min-height:0;margin:0;padding:0;
+  border:0;border-radius:0;box-shadow:none;container-type:inline-size;
+  translate:calc(-1 * clamp(0px, min(var(--W) * var(--lx,1), var(--W) * var(--fx) - 50vw), var(--W) - 100vw)) calc(-1 * clamp(0px, min(var(--H) * var(--ly,1), var(--H) * var(--fy) - 50dvh), var(--H) - 100dvh));
+ }
+ /* Ultrawide: cover would crop the objects themselves, so fit the art and let the wood fill the sides. */
+ @media (min-aspect-ratio:21/10){.stage-viewport .stage{--W:calc(100dvh * var(--ar));left:50%;translate:-50% 0;}}
+ .stage-viewport .object-region{inset:auto;left:var(--rx);top:var(--ry);width:var(--rw);height:var(--rh);}
+
+ /* Desk */
+ .desk-page{min-height:100dvh;padding:0;background:none;}
+ .desk-stage .workspace-illustration{position:absolute;inset:0;width:auto;margin:0;border-radius:0;box-shadow:none;}
+ .desk-stage .workspace-art{width:100%;height:100%;}
+ .desk-stage .intro-card{position:absolute;z-index:3;left:6%;top:4.5%;width:18%;margin:0;padding:1.1cqw 1.3cqw 1cqw;rotate:-2deg;background:linear-gradient(170deg,#fffaf0,#f6ead2);border-radius:2px;box-shadow:0 1px 0 #d8c39f,0 .5cqw 1.2cqw #3a241c47;}
+ .desk-stage .intro-card::before{content:'';position:absolute;left:50%;top:-.6cqw;width:4.5cqw;height:1.3cqw;translate:-50% 0;rotate:3deg;background:#e9dcb999;box-shadow:0 1px 2px #3a241c26;}
+ .desk-stage .intro-card h1{font-size:2.2cqw;}
+ .desk-stage .intro-card p{max-width:none;margin-top:.4cqw;font-size:max(12px,.86cqw);line-height:1.45;}
+ .desk-stage .intro-card small{margin-top:.6cqw;font-size:max(10px,.62cqw);}
+
+ /* Close-up art fills the stage instead of floating as a card. */
+ .stage-viewport :is(.laptop-reader-art,.object-background,.about-book-image){display:block;position:absolute;inset:0;width:100%;height:100%;margin:0;object-fit:fill;border-radius:0;box-shadow:none;}
+
+ /* Projects: the screen still scrolls; only the frame changed. */
+ .stage-viewport .laptop-reader{background:none;}
+
+ /* Research */
+ .stage-viewport .research-object{background:none;}
+ .stage-viewport :is(.research-left,.research-right){position:absolute;top:20%;width:30%;margin:0;font-size:min(calc(100cqw * 15 / 1160), 20px);}
+ .stage-viewport .research-left{left:15%;}
+ .stage-viewport .research-right{left:55%;}
+ .stage-viewport .research-left .eyebrow{font-size:.733em;}
+ .stage-viewport .research-left h2{margin:.25em 0 .4em;font-size:2.267em;line-height:1.25;}
+ .stage-viewport .research-left .paper-foot{margin-top:1.6em;font-size:.867em;}
+ .stage-viewport .research-right p{margin:0 0 1.4em;font-size:1.067em;line-height:1.65;}
+ .stage-viewport .research-right .text-link{font-size:1.067em;}
+
+ /* About */
+ .stage-viewport .about-book{background:none;}
+ .stage-viewport :is(.about-story,.about-facts){position:absolute;top:17%;width:30%;height:auto;max-width:none;margin:0;padding:0;font-size:min(calc(100cqw * 15 / 1160), 20px);}
+ .stage-viewport .about-story{left:14%;}
+ .stage-viewport .about-facts{left:56%;}
+ .stage-viewport :is(.about-story,.about-facts) p{margin:0 0 .87em;font-size:1em;line-height:1.55;}
+ .stage-viewport .about-story h2{margin:0 0 .55em;font-size:1.733em;}
+ .stage-viewport .about-fact-list{margin-top:1.33em;padding-top:0;border-top:0;}
+ .stage-viewport .about-facts h3{margin:0 0 .67em;font-size:1.4em;}
+ .stage-viewport .about-facts dl{grid-template-columns:5.6em 1fr;gap:.55em;font-size:.867em;}
+
+ /* Contact: the postcard text already scales with its container. */
+ .stage-viewport .postcard-view{background:url('/subpage-art/contact.png') 0 0 / 100% 100% no-repeat;}
+ .stage-viewport .postcard-view h2{font-size:min(3.2cqw,56px);}
+ .stage-viewport .postcard-view p{font-size:min(1.25cqw,22px);}
+ .stage-viewport .postcard-view .postcard-links :is(a,button){font-size:min(1.45cqw,24px);}
+ .stage-viewport .postcard-view .postcard-links{gap:min(1cqw,16px);}
+}
+
+/* ───────── Phase 2: objects behave like objects ───────── */
+
+/* Research: corners turn between papers. Outside stage mode they sit in a row under the text. */
+.book-turns{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:28px;}
+.page-corner{padding:6px 0;border:0;background:none;color:#2c6761;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.corner-next{margin-left:auto;}
+.corner-label{font:700 24px/1 'Caveat',cursive;}
+.page-count{color:#8a6956;font:600 22px/1 'Caveat',cursive;}
+
+/* Experience: one category per sheet; the corner lifts the top sheet to the back. */
+.reading-shell .sheet-title{margin:0;color:#a35f4e;font:700 clamp(42px,4.4vw,60px)/1 'Caveat',cursive;}
+.sheet-title:focus{outline:none;}
+.sheet-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid #d3c5ac;}
+.sheet-count{color:#8a6956;font:600 22px/1 'Caveat',cursive;white-space:nowrap;}
+.experience-sheet .experience-entry:first-of-type{border-top:0;}
+/* The fold sits on the top sheet's real corner, which the clipboard art draws inside the frame:
+   25px right of and 11px below the padding box at the desktop frame widths (100/65/65/100). */
+.reading-experience .reading-shell{position:relative;}
+.reading-experience .chapter-content{position:static;}
+.sheet-corner{position:absolute;right:-25px;bottom:-11px;width:60px;height:60px;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sheet-corner .dogear{width:100%;height:100%;--dogear-page:#fdf7e8;--dogear-shade:#eadbc0;--dogear-flap:#fffbf2;--dogear-edge:#a98463;transform-origin:100% 100%;transition:scale 150ms ease-out;}
+.sheet-corner-label{position:absolute;right:calc(100% + 12px);bottom:24px;color:#294c4c;font:700 28px/1 'Caveat',cursive;white-space:nowrap;transition:color 150ms ease-out;}
+@media(hover:hover){.sheet-corner:hover .sheet-corner-label{color:#a3533e;}}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.sheet-corner:hover .dogear{scale:1.15;}}
+@media(prefers-reduced-motion:no-preference){.sheet-corner:active .dogear{scale:.96;}}
+@media(max-width:760px){.sheet-corner{right:-8px;bottom:-6px;width:48px;height:48px;}.sheet-corner-label{bottom:18px;font-size:24px;}}
+
+/* Dog-ear defaults: the book's paper. Hidden where the book is a flowing card instead of the art. */
+.dogear{display:block;overflow:visible;--dogear-page:#f8e4cd;--dogear-shade:#e4c4a2;--dogear-flap:#fff5e6;--dogear-edge:#d4a783;}
+.dogear-edge{fill:none;stroke:var(--dogear-edge);stroke-width:1.5;vector-effect:non-scaling-stroke;}
+.dogear-flap{fill:var(--dogear-flap);filter:drop-shadow(1px 2px 1.5px #503a3659);}
+.page-corner .dogear{display:none;}
+
+/* Contact: the address lines are the links; the stamp copies the email. */
+.postcard-view .postcard-links{gap:16px;}
+.postcard-view .postcard-links a{display:block;width:100%;padding:0 0 4px 4px;border-bottom:1.5px solid #c9ad8c;color:#315b59;font:700 30px/1.25 'Caveat',cursive;text-decoration:none;overflow-wrap:anywhere;}
+.stamp-button{position:absolute;z-index:2;left:80.8%;top:16.8%;width:10.6%;height:19.8%;padding:0;border:0;background:transparent;cursor:pointer;transition:rotate 150ms ease-out;-webkit-tap-highlight-color:transparent;}
+.stamp-button:focus-visible{outline:3px solid #f5bb56;outline-offset:4px;}
+@media(hover:hover){.stamp-button:hover{rotate:-3deg;}}
+.stamp-face{display:none;}
+.stamp-caption{position:absolute;left:79%;top:37.5%;width:14%;color:#8a6956;font:600 18px/1.1 'Caveat',cursive;text-align:center;}
+.postmark-ink{position:absolute;left:-58%;top:4%;width:110%;rotate:-14deg;overflow:visible;fill:none;stroke:#a3533e;stroke-width:3;opacity:0;scale:1.2;transition:opacity 300ms ease-out,scale 300ms ease-out;pointer-events:none;}
+.postmark-ink text{fill:#a3533e;stroke:none;font:800 10.5px 'DM Sans',sans-serif;letter-spacing:1.6px;}
+.postmark-ink[data-inked="true"]{opacity:.88;scale:1;}
+@media(prefers-reduced-motion:reduce){.postmark-ink{scale:1;}}
+@media(max-width:760px){
+ /* On the card's paper, level with the heading, rather than over the artwork strip. */
+ .stamp-button{left:auto;right:20px;top:140px;width:62px;height:70px;}
+ .postcard-message h2{margin-bottom:34px;padding-right:76px;}
+ .stamp-face{display:grid;place-content:center;justify-items:center;gap:2px;width:100%;height:100%;rotate:6deg;background:#f4e8cf;border:2px dashed #aa7a62;box-shadow:0 0 0 4px #f4e8cf,0 3px 6px #503a3633;color:#a76952;font-size:22px;line-height:1;}
+ .stamp-face small{font:800 9px/1 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;}
+ .stamp-caption{display:none;}
+ .postmark-ink{left:-70%;top:-10%;}
+ .postcard-view .postcard-links a{font-size:26px;}
+}
+
+@media (min-width:1000px) and (min-aspect-ratio:13/10){
+ /* Research book: corners, page count and the turning leaf, all in art coordinates. */
+ .stage-viewport .research-object{perspective:2600px;}
+ .stage-viewport .book-turns{display:contents;}
+ /* Each fold's outer corner sits on the measured page corner: right page (90.4%, 84%), left (10.4%, 84%). */
+ .stage-viewport .page-corner{position:absolute;z-index:5;width:3.6cqw;height:3.6cqw;margin:0;padding:0;}
+ .stage-viewport .page-corner .dogear{display:block;width:100%;height:100%;transition:scale 150ms ease-out;}
+ .stage-viewport .corner-next{left:calc(90.4% - 3.6cqw);top:calc(84% - 3.6cqw);}
+ .stage-viewport .corner-next .dogear{transform-origin:100% 100%;}
+ .stage-viewport .corner-prev{left:10.4%;top:calc(84% - 3.6cqw);}
+ .stage-viewport .corner-prev .dogear{transform-origin:0 100%;--dogear-page:#fae8d2;}
+ .stage-viewport .corner-label{position:absolute;bottom:calc(100% + .5cqw);color:#7b5a45;font-size:min(1.6cqw,28px);white-space:nowrap;}
+ .stage-viewport .corner-next .corner-label{right:0;}
+ .stage-viewport .corner-prev .corner-label{left:0;}
+ .stage-viewport .page-count{position:absolute;left:70.3%;top:80%;translate:-50% 0;font-size:min(1.5cqw,26px);}
+ @media(hover:hover){.stage-viewport .page-corner:hover .corner-label{color:#a3533e;}}
+ @media(hover:hover) and (prefers-reduced-motion:no-preference){.stage-viewport .page-corner:hover .dogear{scale:1.15;}}
+ .stage-viewport .page-corner:focus-visible{outline:3px solid #f5bb56;outline-offset:3px;}
+
+ .book-leaf{position:absolute;inset:0;z-index:4;transform-style:preserve-3d;transform-origin:50% 50%;pointer-events:none;}
+ .leaf-face{position:absolute;inset:0;backface-visibility:hidden;}
+ .leaf-reverse{transform:rotateY(180deg);}
+ .leaf-forward .leaf-front,.leaf-back .leaf-reverse{clip-path:polygon(50.1% 13.2%,86.4% 13.8%,90.4% 84%,50.1% 84.8%);background:linear-gradient(90deg,#e9ccb1 50.1%,#fbe8ce 51.5%,#fbead3 56%,#f8e5d1 70%,#f6e2ce 80%,#f8e4cf 90.4%);}
+ .leaf-forward .leaf-reverse,.leaf-back .leaf-front{clip-path:polygon(11.7% 15%,49.9% 13.2%,49.9% 84.8%,10.4% 84%);background:linear-gradient(90deg,#fcebd3 14%,#fbebd3 20%,#faead3 30%,#f6e1cb 45%,#e9ccb1 49.8%);}
+
+ /* Postcard address lines scale with the card. */
+ .stage-viewport .postcard-view .postcard-links{gap:min(1.5cqw,26px);}
+ .stage-viewport .postcard-view .postcard-links a{font-size:min(2.25cqw,40px);}
+ .stage-viewport .stamp-caption{font-size:min(1.2cqw,21px);}
+}
+
+/* The fold belongs to the page that is turning, so it leaves with it rather than staying behind. */
+.single-research[data-turning] :is(.page-corner .dogear,.corner-label,.page-count){opacity:0;}
+
+/* ───────── Phase 3: life on the desk ───────── */
+
+/* Idle shimmer: each band waits just off its object, then sweeps across once. */
+.desk-sheen,.snorlax-stir{pointer-events:none;}
+.desk-sheen rect{transform-box:fill-box;transform:translateX(-100%);}
+.snorlax-stir{transform-box:view-box;}
+
+/* Snorlax mumbles in a speech bubble whose tail points at his head. */
+.snorlax-bubble{position:absolute;z-index:3;padding:.45em .9em .5em;translate:-28% calc(-100% - 14px);background:#fffaf0;color:#23494c;border-radius:1.2em;box-shadow:0 1px 0 #d8c39f,0 6px 16px #3a241c40;font:700 max(18px,1.45cqw)/1 'Caveat',cursive;white-space:nowrap;pointer-events:none;opacity:0;transform-origin:28% 100%;transition:opacity 150ms ease-out,scale 150ms ease-out;}
+.snorlax-bubble::after{content:'';position:absolute;left:24%;top:calc(100% - 1px);border:9px solid transparent;border-top-color:#fffaf0;border-bottom:0;filter:drop-shadow(0 2px 1px #3a241c26);}
+.snorlax-bubble[data-visible="true"]{opacity:1;}
+@media(prefers-reduced-motion:no-preference){.snorlax-bubble{scale:.9;}.snorlax-bubble[data-visible="true"]{scale:1;}}

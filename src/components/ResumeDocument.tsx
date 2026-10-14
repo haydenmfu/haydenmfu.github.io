@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import resumeText from '../data/resumeText.json';
+import { useRef, useState } from 'react';
 import '../resume.css';
 
 const versions = {
@@ -7,23 +6,34 @@ const versions = {
   analytics: { label: 'Data Analytics', pdf: '/resumes/Hayden-Fu-Data-Analytics.pdf', image: '/resumes/data-analytics.png' },
 };
 type Version = keyof typeof versions;
+const order = Object.keys(versions) as Version[];
 
+/* Two résumés lie on the desk, one slightly under the other. Clicking the lower sheet slides it
+   on top. The DOM order never changes, so the sheets transition instead of remounting. */
 export default function ResumeDocument() {
-  const [version, setVersion] = useState<Version>('swe');
-  const [reading, setReading] = useState(false);
-  const selected = versions[version];
-  const other: Version = version === 'swe' ? 'analytics' : 'swe';
-  return <section className="resume-folio" aria-label="Hayden Fu resumes">
-    <div className="resume-controls">
-      <div className="resume-version-group" role="group" aria-label="Resume version">
-        {(Object.keys(versions) as Version[]).map(key => <button key={key} type="button" aria-pressed={key === version} onClick={() => setVersion(key)}>{versions[key].label}</button>)}
-      </div>
-      <button className="resume-flip" type="button" onClick={() => setVersion(other)}>Flip to {versions[other].label} ↻</button>
-      <div className="resume-file-actions"><a href={selected.pdf} download>Download PDF ↓</a><a href={selected.pdf} target="_blank" rel="noopener noreferrer">Open PDF ↗</a><button type="button" aria-pressed={reading} onClick={() => setReading(!reading)}>{reading ? 'Show original layout' : 'Readable text view'}</button></div>
-    </div>
-    <p className="sr-only" role="status">Showing {selected.label} resume</p>
-    <div className="resume-original-sheet" key={version}>
-      {reading ? <div className="resume-readable"><h2>{selected.label} résumé</h2><div>{resumeText[version].text}</div></div> : <img src={selected.image} width="1469" height="1900" alt={`Hayden Fu's ${selected.label} resume. Use Readable text view for selectable text, or open the PDF.`} />}
+  const [top, setTop] = useState<Version>('swe');
+  const folio = useRef<HTMLElement | null>(null);
+  const bringUp = (version: Version) => {
+    setTop(version);
+    requestAnimationFrame(() => folio.current?.querySelector<HTMLElement>('.sheet-pick')?.focus());
+  };
+  return <section className="resume-folio" aria-label="Hayden Fu resumes" data-object="" ref={folio}>
+    <p className="sr-only" role="status">Showing the {versions[top].label} résumé</p>
+    <div className="resume-stack">
+      {order.map(key => {
+        const v = versions[key], isTop = key === top;
+        return <div key={key} className={`resume-sheet sheet-${key} ${isTop ? 'is-top' : 'is-under'}`}>
+          <span className="sheet-tab" aria-hidden="true">{v.label}</span>
+          <img src={v.image} width="1469" height="1900" alt={isTop ? `Hayden Fu's ${v.label} résumé. Download or open the PDF for selectable text.` : ''} />
+          {isTop ? <>
+            <a className="resume-clip" href={v.pdf} download aria-label={`Download the ${v.label} résumé PDF`}>
+              <svg viewBox="0 0 24 64" aria-hidden="true"><path d="M8 20 V50 a4 4 0 0 0 8 0 V12 a7 7 0 0 0 -14 0 V48 a10 10 0 0 0 20 0 V20" /></svg>
+              <span className="clip-tag">download ↓</span>
+            </a>
+            <a className="resume-stamp" href={v.pdf} target="_blank" rel="noopener noreferrer" aria-label={`Open the ${v.label} résumé PDF in a new tab`}><span aria-hidden="true">OPEN<br />PDF ↗</span></a>
+          </> : <button type="button" className="sheet-pick" onClick={() => bringUp(key)} aria-label={`Show the ${v.label} résumé`} />}
+        </div>;
+      })}
     </div>
   </section>;
 }

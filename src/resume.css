@@ -1,15 +1,43 @@
 .reading-resume{background:#d9a169 url('/subpage-art/resume-wood-v3.png') center top / 1536px 1024px repeat-y;}
-.reading-resume .reading-footer{color:#304441;border-color:#a4754c;}
-.resume-folio{max-width:1000px;margin:auto;}
-.resume-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px;padding:18px;background:#faf0db;border:1px solid #b79a73;box-shadow:0 3px 9px #63482825;}
-.resume-version-group{display:flex;flex-wrap:wrap;gap:6px;}
-.resume-controls button{cursor:pointer;border:1px solid #9c8768;background:#fff9e9;color:#294c4c;padding:10px 14px;border-radius:3px;font-size:14px;font-weight:600;}
-.resume-controls button[aria-pressed=true]{background:#294c4c;color:#fff8e5;border-color:#294c4c;}
-.resume-file-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px;width:100%;font-size:14px;}
-.resume-file-actions a{color:#294c4c;font-weight:600;text-underline-offset:4px;}
-.resume-original-sheet{background:white;box-shadow:0 12px 28px #503a3650;border-radius:0;animation:paper-turn .25s ease-out;}
-.resume-original-sheet>img{width:100%;height:auto;display:block;}
-.resume-readable{padding:clamp(22px,5vw,58px);color:#202b32;}
-.resume-readable>div{white-space:pre-wrap;font-size:16px;line-height:1.7;overflow-wrap:anywhere;}
-@keyframes paper-turn{from{opacity:.6;transform:perspective(1400px) rotateY(-5deg)}to{opacity:1;transform:none}}
-@media(max-width:600px){.resume-controls{padding:13px;gap:12px;}.resume-controls button{font-size:13px;padding:10px;}.resume-file-actions{gap:12px;font-size:13px;}}
+
+/* Two sheets on the desk. Room above for the tabs, clip and stamp; room right for the lower sheet. */
+.resume-folio{max-width:1000px;margin:auto;padding:52px 64px 24px 0;}
+.resume-stack{position:relative;aspect-ratio:1469/1900;}
+.resume-sheet{position:absolute;inset:0;container-type:inline-size;background:#fff;box-shadow:0 2px 3px #503a3633,0 14px 30px #503a3650;transition-property:translate,rotate;transition-duration:300ms;transition-timing-function:ease-out;}
+.resume-sheet>img{display:block;width:100%;height:100%;outline:1px solid oklch(0 0 0 / .1);outline-offset:-1px;}
+.resume-sheet.is-top{z-index:2;}
+.resume-sheet.is-under{z-index:1;translate:44px -8px;rotate:1deg;}
+@media(hover:hover){.resume-sheet.is-under:hover{translate:58px -10px;}}
+
+/* Each sheet's tab sits at its own spot along the top edge, so the lower one always shows. */
+.sheet-tab{position:absolute;bottom:100%;padding:8px 16px 4px;background:#fffaf0;border-radius:6px 6px 0 0;box-shadow:0 -3px 6px #503a3626;color:#294c4c;font:700 24px/1 'Caveat',cursive;white-space:nowrap;}
+.sheet-swe .sheet-tab{left:22%;}
+.sheet-analytics .sheet-tab{left:52%;}
+.is-under .sheet-tab{background:#efe5d2;color:#6b7b78;box-shadow:0 -2px 4px #503a361a;}
+.sheet-pick{position:absolute;inset:-44px 0 0;width:100%;height:calc(100% + 44px);padding:0;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sheet-pick:focus-visible{outline:3px solid #f5bb56;outline-offset:3px;}
+
+/* Paper clip: download. Stamp: open the PDF. */
+.resume-clip{position:absolute;z-index:3;left:5%;top:-30px;display:flex;align-items:flex-start;gap:8px;color:#6f7d7b;text-decoration:none;-webkit-tap-highlight-color:transparent;}
+.resume-clip svg{width:22px;height:60px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;filter:drop-shadow(1px 2px 1px #503a3640);}
+.clip-tag{margin-top:36px;color:#5d5249;font:700 22px/1 'Caveat',cursive;white-space:nowrap;transition:color 150ms ease-out;}
+/* The stamp sits wholly in the empty top-right margin: right of the contact line and above the first rule. */
+.resume-stamp{position:absolute;z-index:3;right:2.4cqw;top:1cqw;display:grid;place-items:center;width:7cqw;height:7.6cqw;rotate:5deg;background:#f6ecd6;border:2px dashed #aa7a62;box-shadow:0 0 0 .4cqw #f6ecd6,0 2px 5px #503a3640;color:#a3533e;font:800 1.15cqw/1.15 'DM Sans',sans-serif;letter-spacing:.08em;text-align:center;text-decoration:none;transition:rotate 150ms ease-out,color 150ms ease-out;-webkit-tap-highlight-color:transparent;}
+@media(hover:hover){
+ .resume-clip:hover .clip-tag{color:#a3533e;}
+ .resume-stamp:hover{rotate:3deg;color:#7f3a28;}
+}
+
+@media(max-width:600px){
+ .resume-folio{padding:56px 24px 16px 0;}
+ .resume-sheet.is-under{translate:18px -6px;rotate:.8deg;}
+ /* No room for both tabs beside the clip and stamp: show only the sheet you can switch to. */
+ .sheet-tab{padding:6px 10px 3px;font-size:18px;}
+ .is-top .sheet-tab{display:none;}
+ .sheet-swe .sheet-tab,.sheet-analytics .sheet-tab{left:42%;}
+ /* Too narrow to fit on the paper: it lies on the desk just above the sheet's corner instead. */
+ .resume-stamp{right:0;top:-52px;width:46px;height:48px;font-size:8px;box-shadow:0 0 0 3px #f6ecd6,0 3px 6px #503a3650;}
+ .resume-clip{left:4%;top:-26px;}
+ .resume-clip svg{width:17px;height:46px;}
+ .clip-tag{margin-top:28px;font-size:16px;}
+}

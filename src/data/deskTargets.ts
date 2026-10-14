@@ -7,3 +7,12 @@ export const deskTargets = [
   { view: 'resume', object: 'resume paper', path: 'M 2376 1367 L 2347 1305 L 2339 1298 L 2013 1370 L 2010 1377 L 2040 1447 L 2048 1455 L 2369 1375 Z' },
   { view: 'contact', object: 'postcard', path: 'M 2287 1192 L 2193 1037 L 1831 1123 L 1852 1181 L 1906 1282 L 2055 1254 L 2133 1233 L 2278 1204 L 2287 1199 Z' },
 ] as const;
+
+// Traced from Base.png with GrabCut, around the mug in front of him. It overlaps none of the desk targets.
+export const snorlax = {
+  path: 'M 1678 714 L 1685 766 L 1702 757 L 1700 728 L 1708 717 L 1722 717 L 1728 726 L 1752 726 L 1754 710 L 1763 701 L 1779 702 L 1781 721 L 1870 729 L 1936 800 L 1933 872 L 1962 898 L 2034 938 L 2102 956 L 2127 981 L 2172 1003 L 2230 999 L 2256 986 L 2280 964 L 2290 944 L 2315 935 L 2349 911 L 2455 883 L 2532 839 L 2594 835 L 2618 848 L 2656 848 L 2679 840 L 2711 817 L 2744 775 L 2763 730 L 2763 689 L 2750 662 L 2748 635 L 2713 636 L 2709 622 L 2697 624 L 2689 634 L 2667 628 L 2643 566 L 2601 515 L 2598 457 L 2586 448 L 2576 424 L 2547 396 L 2499 370 L 2439 352 L 2350 347 L 2286 353 L 2266 299 L 2231 263 L 2200 244 L 2167 202 L 2167 191 L 2153 191 L 2147 185 L 2101 185 L 2084 201 L 2072 201 L 2072 218 L 2062 231 L 1988 253 L 1933 285 L 1915 303 L 1848 309 L 1796 335 L 1797 377 L 1826 430 L 1824 485 L 1835 533 L 1782 563 L 1753 588 L 1737 588 L 1737 605 L 1699 658 Z',
+  // Where he rocks from (bottom of his belly), and where the speech bubble's tail points (top of his head).
+  pivot: { x: 2200, y: 950 },
+  bubble: { x: 2130, y: 262 },
+  lines: ['Zzz…', 'five more minutes…', 'mmm… cookies…', '*snore*', '…the laptop’s that way…', 'zzz… reviewer two…'],
+};
