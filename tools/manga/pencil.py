@@ -30,6 +30,7 @@ import lineart
 from mangafy import EXTS, despeckle, flatten, load_rgb, remove_islands, save
 
 BAND_EDGES = (0.07, 0.30, 0.52, 0.76)  # relative darkness cuts; below the first is bare paper
+LIP_TONE = 0.24  # relative darkness given to lips: a light tone, enough to tell them from skin and teeth
 FACE_MODEL = Path(__file__).resolve().parent / "models" / "face_detection_yunet_2023mar.onnx"
 
 
@@ -77,7 +78,8 @@ def chroma(rgb):
 
 
 def find_faces(rgb, model):
-    """Boxes (x, y, w, h) of the faces in the photo. Faces too small to matter are not found."""
+    """The faces in the photo, each as (x, y, w, h) followed by five points: the eyes, the tip
+    of the nose and the two corners of the mouth. Faces too small to matter are not found."""
     if not Path(model).exists():
         print(f"note: no face detector at {model}; faces are shaded like everything else", flush=True)
         return []
@@ -86,7 +88,7 @@ def find_faces(rgb, model):
     small = cv2.resize(rgb, (round(w * s), round(h * s)), interpolation=cv2.INTER_AREA)
     det = cv2.FaceDetectorYN.create(str(model), "", (small.shape[1], small.shape[0]), 0.6, 0.3, 50)
     _, found = det.detect(cv2.cvtColor(small, cv2.COLOR_RGB2BGR))
-    return [] if found is None else [tuple(int(round(v / s)) for v in f[:4]) for f in found]
+    return [] if found is None else [tuple(int(round(v / s)) for v in f[:14]) for f in found]
 
 
 def skin_of(face, ab, light, scale):
@@ -96,7 +98,7 @@ def skin_of(face, ab, light, scale):
     The colour is measured from this face, so no assumption is made about skin tone."""
     a, b = ab
     h, w = a.shape
-    x, y, fw, fh = face
+    x, y, fw, fh = face[:4]
     core = (slice(max(y + 3 * fh // 10, 0), min(y + 3 * fh // 4, h)),
             slice(max(x + fw // 4, 0), min(x + 3 * fw // 4, w)))
     if a[core].size == 0:
@@ -121,6 +123,31 @@ def skin_of(face, ab, light, scale):
     skin = lab == inside.argmax()
     region = ndimage.binary_fill_holes(cv2.morphologyEx(skin.astype(np.uint8), cv2.MORPH_CLOSE, disc(9)) > 0)
     return region, skin
+
+
+def lips_of(face, ab, light, skin, scale):
+    """How much each pixel is lip, 0..1: just below the mouth line and redder than this person's skin.
+    In grey a lip is often no darker than the skin beside it, so without this the lips are
+    left as bare paper and cannot be told from the teeth. Teeth are not red, so they stay out."""
+    a, _ = ab
+    h, w = a.shape
+    (x1, y1), (x2, y2) = face[10:12], face[12:14]
+    wide = float(np.hypot(x2 - x1, y2 - y1))
+    if wide < 12 or not skin.any():
+        return None
+    cx, cy, ux, uy = (x1 + x2) / 2, (y1 + y2) / 2, (x2 - x1) / wide, (y2 - y1) / wide
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    along, across = (xx - cx) * ux + (yy - cy) * uy, (yy - cy) * ux - (xx - cx) * uy
+    nx, ny = face[8:10]
+    if (ny - cy) * ux - (nx - cx) * uy > 0:  # make "across" negative towards the nose
+        across = -across
+    # Only below the line between the corners, which is the lower lip (and, in a smile, both).
+    # Red above that line is as often skin (a graze, a flushed nose) as upper lip, and toning
+    # it draws a moustache; an upper lip dark enough to matter already carries its own tone.
+    zone = ((along / (0.70 * wide)) ** 2 + (across / (0.46 * wide)) ** 2 < 1) & (across > 0)
+    a0, l0 = np.median(a[skin]), np.median(light[skin])
+    lip = smooth((a - a0 - 2.5) / 6.0) * zone * (light > 0.35 * l0)
+    return cv2.GaussianBlur(lip.astype(np.float32), (0, 0), 1.5 * scale)
 
 
 def skin_tone(rel, region, skin, keep):
@@ -279,10 +306,13 @@ def flow_angle(rgb, labels, n, default):
     return default + delta * smooth((coherence - 0.22) / 0.28)
 
 
-def hatch(rgb, d, labels, scale, angle, rng, groups=None, soft=None, steady=False):
+def hatch(rgb, d, labels, scale, angle, rng, groups=None, soft=None, steady=False, floor=0.03):
     """Shade every shape: spacing, pressure and number of passes follow the shape's tone.
     Shapes inside `soft` (skin) are put in with finer, lighter strokes over more smudged
-    tone, so they read as smooth shading rather than as hatching."""
+    tone, so they read as smooth shading rather than as hatching. Their tone also fades in
+    from nothing at the edge of the shape (`floor` is the tone at that edge) and all of them
+    are stroked the same way, so a shadow on a face is a gradient, not a flat patch with an
+    outline."""
     h, w = d.shape
     n = int(labels.max()) + 1
     ids = np.arange(n)
@@ -301,16 +331,19 @@ def hatch(rgb, d, labels, scale, angle, rng, groups=None, soft=None, steady=Fals
     gentle = np.zeros(n, np.float32)
     if soft is not None:
         gentle = (np.bincount(labels.ravel(), weights=soft.ravel(), minlength=n) / count > 0.5).astype(np.float32)
+    base = np.where(gentle > 0, np.deg2rad(angle), base)
+    cross2 = np.where(gentle > 0, 0.5, rnd(ids, 22))
+    cross3 = np.where(gentle > 0, 0.5, rnd(ids, 23))
     passes = [
         (base,
          (8.5 - 5.0 * np.clip(D / 0.7, 0, 1) ** 0.8) * scale,
          (0.22 + 0.38 * D) * (D > 0.02),
          56),
-        (base + np.deg2rad(38 + 24 * (rnd(ids, 22) - 0.5)),
+        (base + np.deg2rad(38 + 24 * (cross2 - 0.5)),
          (8.0 - 4.2 * np.clip((D - 0.30) / 0.5, 0, 1)) * scale,
          (0.20 + 0.32 * D) * (D > 0.30),
          46),
-        (base - np.deg2rad(30 + 10 * (rnd(ids, 23) - 0.5)),
+        (base - np.deg2rad(30 + 10 * (cross3 - 0.5)),
          (6.0 - 2.5 * np.clip((D - 0.55) / 0.4, 0, 1)) * scale,
          (0.26 + 0.28 * D) * (D > 0.55),
          38),
@@ -321,7 +354,15 @@ def hatch(rgb, d, labels, scale, angle, rng, groups=None, soft=None, steady=Fals
     tooth = cv2.GaussianBlur(rng.random((h, w)).astype(np.float32), (0, 0), 0.6 * scale)
     tooth = np.clip(1 + 0.42 * (tooth - tooth.mean()) / (tooth.std() + 1e-6), 0.25, 1.6)
     smudge = 0.28 + 0.44 * gentle[labels]
-    keep = 1 - smudge * d * (labels > 0)  # smudged graphite under the strokes
+    under = d
+    if gentle.any():  # skin: tone taken from its surroundings, fading in from the edge of the shape
+        skin = (soft > 0.5).astype(np.float32)
+        near = cv2.GaussianBlur(d * skin, (0, 0), 7 * scale) / np.maximum(cv2.GaussianBlur(skin, (0, 0), 7 * scale), 1e-3)
+        fade = smooth((near - 0.6 * floor) / (2.4 * floor))
+        on_skin = gentle[labels] > 0
+        local = np.where(on_skin, np.clip(near / np.maximum(D[labels], 1e-3), 0, 1.35) * fade, local)
+        under = np.where(on_skin, near * fade, d)
+    keep = 1 - smudge * under * (labels > 0)  # smudged graphite under the strokes
     for i, (theta, spacing, pressure, length) in enumerate(passes):
         spacing, pressure = spacing * (1 - 0.30 * gentle), pressure * (1 - 0.66 * gentle)
         ell = (length * scale * (0.85 + 0.4 * rnd(ids, 30 + i))).astype(np.float32)
@@ -381,6 +422,10 @@ def render(rgb, args):
         if found is not None:
             region, skin = found
             rel = skin_tone(rel, region, skin, float(np.clip(args.skin, 0, 0.95)))
+            lips = lips_of(box, (a, b), light, skin, scale)
+            if lips is not None:
+                rel = np.maximum(rel, LIP_TONE * lips)
+                region = region | (lips > 0.3)
             face |= region
     d = (rel * args.shade).astype(np.float32)
     if args.color_edges > 0:
@@ -395,7 +440,8 @@ def render(rgb, args):
     line_dark = (1 - line) ** 0.85 * args.line_weight
 
     labels = shapes(rel, line, scale, float(np.clip(args.edges, 0, 1)), groups)
-    tone_dark = hatch(rgb, d, labels, scale, args.angle, rng, groups, face.astype(np.float32), args.steady)
+    tone_dark = hatch(rgb, d, labels, scale, args.angle, rng, groups, face.astype(np.float32), args.steady,
+                      BAND_EDGES[0] * args.shade)
 
     dark = 1 - (1 - tone_dark * grain) * (1 - line_dark * (0.85 + 0.15 * grain))
     return np.clip(dark, 0, 1), labels, face
