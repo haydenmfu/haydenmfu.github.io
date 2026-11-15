@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
-import { ownerName, sectionOrder, sections, type SectionId } from './content';
+import { ownerName, pictures, sectionOrder, sections, type SectionId } from './content';
 import { Engine, lineRange, lineView, type Mode, type Rect } from './engine';
 import './sketchbook.css';
 
@@ -20,6 +20,7 @@ export default function Sketchbook() {
   const [open, setOpen] = useState(false);
   const [walked, setWalked] = useState(false);
   const [travelling, setTravelling] = useState(false);
+  const [turned, setTurned] = useState({ at: '', n: 0 });   // which picture of a stop is showing; every stop opens on its first
 
   useEffect(() => {
     let started = false, moved = false, shown: SectionId = 'about';
@@ -56,6 +57,9 @@ export default function Sketchbook() {
 
   const sec = sections[section], stops = sec.stops, at = Math.min(stop, stops.length - 1), current = stops[at];
   const inPath = mode === 'path';
+  const arts = current ? pictures(current) : [], here = `${section}:${at}`;
+  const pic = turned.at === here ? Math.min(turned.n, arts.length - 1) : 0, art = arts[pic];
+  const turn = (n: number) => setTurned({ at: here, n: (n + arts.length) % arts.length });
 
   // Leave this stop, walk the line, and arrive in another.
   const travel = useCallback(async (to: number) => {
@@ -72,14 +76,19 @@ export default function Sketchbook() {
     const key = (ev: KeyboardEvent) => {
       const e = engine.current; if (!e) return;
       if (ev.key === 'Escape') { if (open) setOpen(false); else void e.close(); return; }
-      if (open) { if (ev.key === 'ArrowRight') void travel(Math.min(stop, stops.length - 1) + 1); if (ev.key === 'ArrowLeft' && stop > 0) void travel(stop - 1); return; }
+      if (open) {
+        if (ev.key === 'ArrowRight') void travel(Math.min(stop, stops.length - 1) + 1);
+        if (ev.key === 'ArrowLeft' && stop > 0) void travel(stop - 1);
+        if (arts.length > 1 && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) { ev.preventDefault(); turn(pic + (ev.key === 'ArrowDown' ? 1 : -1)); }
+        return;
+      }
       if (e.mode !== 'path') return;
       const step: Record<string, number> = { ArrowDown: 1.6, ArrowUp: -1.6, PageDown: 6, PageUp: -6, ' ': 6, Home: -1e3, End: 1e3 };
       if (ev.key in step) { ev.preventDefault(); e.walkBy(step[ev.key]); }
     };
     addEventListener('keydown', key);
     return () => removeEventListener('keydown', key);
-  }, [open, stop, stops.length, travel]);
+  });
 
   // The page grows out of the drawing that stood beside the line.
   useLayoutEffect(() => {
@@ -92,6 +101,9 @@ export default function Sketchbook() {
     const id = requestAnimationFrame(() => requestAnimationFrame(() => { fig.style.transition = ''; fig.style.transform = ''; }));
     return () => cancelAnimationFrame(id);
   }, [open, stop, section]);
+
+  // Turning to another picture of the same stop: its strip of colour starts in the same place.
+  useLayoutEffect(() => { band(26); }, [pic]);   // eslint-disable-line react-hooks/exhaustive-deps
 
   // A strip of the photograph through the drawing, parallel to the pencil strokes.
   function band(half: number, animate = false) {
@@ -147,12 +159,26 @@ export default function Sketchbook() {
       </div>
 
       <aside className="sb-plate" aria-hidden={!open}>
-        <figure ref={figure} data-photo={!!current?.art?.photo} data-sheet={!!current?.art?.sheet} style={{ '--ar': current?.art?.ratio ?? 0.75 } as CSSProperties}
-          onPointerMove={move} onPointerDown={hold} onPointerUp={release} onPointerCancel={release}>
-          {current?.art
-            ? <><img src={current.art.sketch} alt={`Pencil drawing: ${current.title}`} draggable={false} />{current.art.photo && <img ref={photo} className="sb-photo" src={current.art.photo} alt="" draggable={false} />}</>
-            : <div className="sb-blank"><b>{number(at)}</b><span className="sb-mono">Not yet drawn</span></div>}
-        </figure>
+        <div className="sb-view" data-many={arts.length > 1}>
+          <figure ref={figure} data-photo={!!art?.photo} data-sheet={!!art?.sheet} style={{ '--ar': art?.ratio ?? 0.75 } as CSSProperties}
+            onPointerMove={move} onPointerDown={hold} onPointerUp={release} onPointerCancel={release}>
+            {art
+              ? <><img key={art.sketch} src={art.sketch} alt={`${art.sheet ? 'Figure' : 'Pencil drawing'}: ${art.caption ?? current.title}`} draggable={false} />
+                {art.photo && <img key={art.photo} ref={photo} className="sb-photo" src={art.photo} alt="" draggable={false} />}</>
+              : <div className="sb-blank"><b>{number(at)}</b><span className="sb-mono">Not yet drawn</span></div>}
+          </figure>
+          {arts.length > 1 && (
+            <div className="sb-pics">
+              <p className="sb-mono">{pic + 1} / {arts.length}{art?.caption ? ` · ${art.caption}` : ''}</p>
+              <div>
+                {arts.map((a, i) => (
+                  <button key={a.sketch} aria-label={`Picture ${i + 1}${a.caption ? `: ${a.caption}` : ''}`} aria-current={i === pic} data-sheet={!!a.sheet}
+                    style={{ '--ar': a.ratio } as CSSProperties} onClick={() => turn(i)}><img src={a.sketch} alt="" draggable={false} /></button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
         {current && (
           <div className="sb-notes">
             <p className="sb-mono sb-no">No. {number(at)} / {sec.label}</p>
@@ -162,7 +188,7 @@ export default function Sketchbook() {
             {current.tags && <p className="sb-mono sb-tags">{current.tags.join(' · ')}</p>}
             {current.links && <p className="sb-links">{current.links.map(l => <a key={l.href} href={l.href} target={l.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>)}</p>}
             <div className="sb-rule" />
-            {current.art?.photo && <p className="sb-mono sb-how">Move across the drawing. Hold to see the photograph.</p>}
+            {art?.photo && <p className="sb-mono sb-how">{art.sheet ? 'Move across the figure. Hold to see it in colour.' : 'Move across the drawing. Hold to see the photograph.'}</p>}
             <div className="sb-walk">
               {at > 0 && <button className="sb-mono" onClick={() => void travel(at - 1)}><span aria-hidden="true">←</span> {stops[at - 1].title}</button>}
               <button className="sb-mono sb-next" onClick={() => void travel(at + 1)}>{last ? 'Walk to the end of the line' : <>Next: {stops[at + 1].title}</>} <span aria-hidden="true">→</span></button>

@@ -7,6 +7,7 @@ export interface Art {
   photo?: string;   // the photograph a pencil render was drawn from, same size, shown as a strip of colour
   ratio: number;    // width / height
   sheet?: boolean;  // a document page: stands with crisp edges instead of fading out like a drawing
+  caption?: string; // what this picture is, shown under it when a stop has several
 }
 
 export interface Stop {
@@ -15,7 +16,8 @@ export interface Stop {
   body: string[];
   tags?: string[];
   links?: { href: string; label: string }[];
-  art?: Art;        // stops without art stand as blank sheets until a drawing exists
+  art?: Art;        // the picture that stands beside the line; stops without one stand as blank sheets
+  more?: Art[];     // further pictures, turned to once the stop is open
 }
 
 export interface Section {
@@ -28,11 +30,15 @@ export interface Section {
 
 export type SectionId = 'about' | 'projects' | 'research' | 'resume';
 
-const plate = (name: string, ratio = 0.75): Art => ({
+const plate = (name: string, ratio = 0.75, caption?: string): Art => ({
   sketch: `/sketchbook/plates/${name}_s.webp`,
   photo: `/sketchbook/plates/${name}_p.webp`,
   ratio,
+  caption,
 });
+// A plot or a screenshot: shown whole, in graphite, with its own colours underneath.
+const figure = (name: string, ratio: number, caption?: string): Art => ({ ...plate(name, ratio, caption), sheet: true });
+export const pictures = (stop: Stop): Art[] => (stop.art ? [stop.art, ...(stop.more ?? [])] : []);
 
 const project = (title: string): Stop => {
   const p = projects.find(q => q.title === title)!;
@@ -48,10 +54,10 @@ const aboutStops: Stop[] = [
   { title: 'Where I am', meta: profile.location, body: [`I study ${profile.degree.toLowerCase()} at ${profile.school}. I'm in ${profile.location.replace('; the', ', and the')}.`], art: plate('tower') },
   { title: 'What I am looking for', meta: profile.availability, body: [about.current[1]], art: plate('window') },
   {
-    title: 'Say hello',
+    title: 'Grab me a coffee',
     meta: profile.email,
     body: [sentences(about.contact).slice(-1)[0]],
-    art: plate('hello'),
+    art: plate('coffee'),
     links: [
       { href: `mailto:${profile.email}`, label: profile.email },
       { href: profile.github, label: 'GitHub' },
@@ -71,9 +77,18 @@ const projectStops: Stop[] = [
     ],
     tags: ['TypeScript', 'three.js', 'Vite', 'Cloudflare Workers'],
     links: [{ href: 'https://thehive.boston/', label: 'See The Hive' }],
-    art: plate('hack', 0.667),
+    art: plate('hack', 0.667, 'At the hack'),
+    more: [
+      figure('hive1', 1.982, 'The simulator: scouting a site'),
+      figure('hive2', 1.987, 'Following a scout at night'),
+      figure('hive3', 1.962, 'A scout on its survey path'),
+    ],
   },
-  { ...project('SASH: Search Across Six Hops'), art: plate('sash') },
+  {
+    ...project('SASH: Search Across Six Hops'),
+    art: figure('sixhops', 1.957, 'The demo screen'),
+    more: [plate('sash_team1', 0.75, 'The team, with the prize'), plate('sash_team2', 0.75, 'The team, with the prize'), plate('sash', 0.75, 'The prize')],
+  },
   {
     title: 'Pencil sketches from photographs',
     meta: 'Personal project / 2026',
@@ -97,9 +112,9 @@ const projectStops: Stop[] = [
 
 // Research: work done with a lab or a research group.
 const researchStops: Stop[] = [
-  project('LLM Prediction Markets'),
-  { ...project('Irrigation Data Assimilation'), art: plate('irrigation') },
-  { ...project('Lake-Effect Snow Forecasting'), art: plate('snow', 1.333) },
+  { ...project('LLM Prediction Markets'), art: figure('drift', 1.437, 'Mean forecast as the evidence arrives') },
+  { ...project('Irrigation Data Assimilation'), art: figure('particles', 1.423, 'Soil moisture and inferred irrigation'), more: [plate('irrigation', 0.75, 'Working notes')] },
+  { ...project('Lake-Effect Snow Forecasting'), art: figure('scatter', 1.6, 'Wind speed against temperature'), more: [plate('snow', 1.333, 'First snow on campus')] },
 ];
 
 // Résumé: the two documents, nothing else. Everything in them is already on the other lines.

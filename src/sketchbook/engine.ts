@@ -16,7 +16,7 @@ export interface Callbacks {
 
 type Vec = { x: number; y: number; z: number };
 type Screen = { x: number; y: number; z: number; s: number };
-interface Card { sketch: HTMLCanvasElement; photo?: HTMLCanvasElement; far: HTMLCanvasElement; farPhoto?: HTMLCanvasElement; ratio: number; open: number }
+interface Card { sketch: HTMLCanvasElement; photo?: HTMLCanvasElement; far: HTMLCanvasElement; farPhoto?: HTMLCanvasElement; ratio: number; open: number; behind: number }
 
 // A third-size copy, drawn instead of the full one while the stop is still far off.
 function shrink(src: HTMLCanvasElement) {
@@ -24,8 +24,8 @@ function shrink(src: HTMLCanvasElement) {
   const g = c.getContext('2d')!; g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, c.width, c.height);
   return c;
 }
-function makeCard(sketch: HTMLCanvasElement, ratio: number, photo?: HTMLCanvasElement): Card {
-  return { sketch, photo, far: shrink(sketch), farPhoto: photo && shrink(photo), ratio, open: 0 };
+function makeCard(sketch: HTMLCanvasElement, ratio: number, photo?: HTMLCanvasElement, behind = 0): Card {
+  return { sketch, photo, far: shrink(sketch), farPhoto: photo && shrink(photo), ratio, open: 0, behind };
 }
 
 const GRAPHITE = '38,38,42';
@@ -206,7 +206,8 @@ export class Engine {
       const art = stop.art, h = Math.round(980 * Math.min(1, 1 / art.ratio)), w = Math.round(h * art.ratio);
       this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), art.ratio));   // until the drawing arrives
       void Promise.all([loadImage(art.sketch), art.photo ? loadImage(art.photo) : null]).then(([s, p]) => {
-        this.cards.set(key, makeCard(art.sheet ? sheet(s, w, h) : feather(s, w, h, 11 + i), art.ratio, p ? feather(p, w, h, 11 + i) : undefined));
+        const stand = (im: HTMLImageElement) => (art.sheet ? sheet(im, w, h) : feather(im, w, h, 11 + i));
+        this.cards.set(key, makeCard(stand(s), art.ratio, p ? stand(p) : undefined, art.sheet ? stop.more?.length ?? 0 : 0));   // a soft-edged drawing has no sheet to stack
         this.dirty = true;
       });
     });
@@ -442,6 +443,11 @@ export class Engine {
       const iw = img.width, ih = img.height, lift = card.open * 0.05 * sc;
       g.save();
       g.transform(w / iw, 0, (s.b.x - s.t.x) / ih, (s.b.y - s.t.y) / ih, s.t.x - w / 2, s.t.y - lift);
+      for (let k = Math.min(card.behind, 2); k > 0; k--) {   // more pictures at this stop: their sheets show behind the first
+        const dx = -s.side * k * iw * 0.045, dy = -k * ih * 0.04;
+        g.fillStyle = '#fff'; g.fillRect(dx, dy, iw, ih);
+        g.strokeStyle = `rgba(${GRAPHITE},.42)`; g.lineWidth = iw * 0.006; g.strokeRect(dx, dy, iw, ih);
+      }
       g.drawImage(img, 0, 0);
       if (pic) {   // one streak of the photograph, parallel to the pencil strokes
         const half = iw * (0.014 + 0.075 * card.open), cx = iw * (0.5 + 0.1 * Math.sin(s.i * 2.4)), dx = Math.cos(50 * Math.PI / 180), dy = -Math.sin(50 * Math.PI / 180), R = ih;
@@ -462,7 +468,7 @@ export class Engine {
         const tw = g.measureText(label).width;
         this.rects.push({ key: s.key, rect: { x: (inner > 0 ? x : x - tw) - 8, y: s.b.y - 0.48 * cs, w: tw + 16, h: 0.56 * cs } });
         g.font = `500 ${Math.max(0.06 * cs, 7)}px "IBM Plex Mono", monospace`;
-        g.fillStyle = sec.color; g.fillText(s.stop ? `NO. ${String(s.i + 1).padStart(2, '0')}` : 'THE END OF THE LINE', x, s.b.y - 0.37 * cs);
+        g.fillStyle = sec.color; g.fillText(s.stop ? `NO. ${String(s.i + 1).padStart(2, '0')}${s.stop.more?.length ? ` · ${s.stop.more.length + 1} PICTURES` : ''}` : 'THE END OF THE LINE', x, s.b.y - 0.37 * cs);
         if (hot) { const tw = Math.min(0.9 * cs, 120); g.fillRect(inner > 0 ? x : x - tw, s.b.y - 0.09 * cs, tw, Math.max(1.5, 0.012 * cs)); }
       }
     }

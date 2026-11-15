@@ -46,7 +46,7 @@ export const projects: Project[] = [
     title: 'Lake-Effect Snow Forecasting',
     description: "I built reusable Python tools to extract, align, and validate weather-model outputs and sensor observations for forecast analysis. The pipeline samples locations, computes temperature and wind features, and reduces repeated spatial lookups. I also developed a PyTorch model to correct short-term forecasts, bringing data preparation and model evaluation into the same workflow.",
     category: 'Data Engineering / ML',
-    tags: ['Python', 'PyTorch', 'GAN', 'HRRR'],
+    tags: ['Python', 'PyTorch', 'HRRR'],
     year: '2025',
     pattern: 'halftone',
     coverImage: '/work-covers/lake-effect-cover.png',
