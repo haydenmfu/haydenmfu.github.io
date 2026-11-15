@@ -1,5 +1,4 @@
 import { about } from '../data/about';
-import { experience } from '../data/experience';
 import { profile } from '../data/profile';
 import { projects } from '../data/projects';
 
@@ -38,7 +37,6 @@ const project = (title: string): Stop => {
   const p = projects.find(q => q.title === title)!;
   return { title: p.title, meta: `${p.category} / ${p.year}`, body: [p.description], tags: p.tags, links: p.link ? [{ href: p.link, label: p.linkLabel ?? 'Read more' }] : undefined };
 };
-const club = experience.find(e => e.org === 'Cornell Cybersecurity Club')!;
 const sentences = (text: string) => text.split(/(?<=\.)\s+/);
 
 // About: who, what, lately, where, what next, and how to reach me. One thing per stop.
@@ -60,7 +58,7 @@ const aboutStops: Stop[] = [
   },
 ];
 
-// Projects: things built for their own sake, and at hackathons and competitions.
+// Projects: things built for their own sake, and at hackathons.
 const projectStops: Stop[] = [
   {
     title: 'The Hive',
@@ -93,7 +91,6 @@ const projectStops: Stop[] = [
     ],
     tags: ['JavaScript', 'Node.js', 'SQLite', 'SVG'],
   },
-  { title: 'Capture the flag', meta: `${club.org} / ${club.period}`, body: [club.description] },
 ];
 
 // Research: work done with a lab or a research group.

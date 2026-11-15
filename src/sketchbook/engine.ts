@@ -123,9 +123,8 @@ export class Engine {
   private raf = 0; private dirty = true; private paused = false; private veil = 0; private touchY: number | null = null;
   private off: (() => void)[] = [];
   private dead = false;
-  private quality = 1;       // share of full resolution in use right now
-  private moveQuality = 1;   // the share this machine keeps up with while things move
-  private frameMs = 16; private lastDraw = 0; private lastChange = 0; private stillSince = 0;   // torn down: late image loads must not draw or call back
+  private quality = 1;   // share of full resolution in use; only ever steps down, and stays put whether moving or still
+  private lastDraw = 0; private lastChange = 0; private slowSum = 0; private slowCount = 0;   // torn down: late image loads must not draw or call back
 
   constructor(private canvas: HTMLCanvasElement, private sections: Record<SectionId, Section>, private name: string, private cb: Callbacks) {
     this.ctx = canvas.getContext('2d')!;
@@ -464,7 +463,7 @@ export class Engine {
       } else if (Math.abs(this.uTarget - this.u) > 0.002) { this.u = lerp(this.u, this.uTarget, 0.13); moving = true; }
       else this.u = this.uTarget;
     }
-    if (!moving && !this.dirty && this.veil <= 0.01) { this.settle(now); return; }   // nothing has changed: draw nothing
+    if (!moving && !this.dirty && this.veil <= 0.01) { this.slowCount = 0; return; }   // nothing has changed: draw nothing
     this.pace(now, moving);
     this.dirty = false; this.lastDraw = now;
     const g = this.ctx, t = now - this.t0, id = this.section;
@@ -490,19 +489,16 @@ export class Engine {
     if (this.veil > 0.01) { g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = `rgba(255,255,255,${this.veil})`; g.fillRect(0, 0, this.canvas.width, this.canvas.height); this.veil *= 0.9; }
   };
 
-  /** While things move: if frames are coming late, draw fewer pixels. */
+  /** If frames keep coming late while things move, settle on slightly fewer pixels, for good.
+   *  The level is the same moving or still, so the picture never visibly switches sharpness. */
   private pace(now: number, moving: boolean) {
-    if (now - this.lastDraw < 120) this.frameMs = this.frameMs * 0.88 + (now - this.lastDraw) * 0.12;
-    if (!moving) return;
-    this.stillSince = 0;
-    if (this.frameMs > 23 && this.moveQuality > 0.5 && now - this.lastChange > 500) { this.moveQuality = Math.max(0.5, this.moveQuality * 0.8); this.lastChange = now; this.frameMs = 16; }
-    if (this.quality !== this.moveQuality) { this.quality = this.moveQuality; this.resize(); }
-  }
-  /** Once everything has come to rest: one frame at full sharpness. */
-  private settle(now: number) {
-    if (this.quality === 1) return;
-    if (!this.stillSince) this.stillSince = now;
-    else if (now - this.stillSince > 220) { this.quality = 1; this.resize(); }
+    const dt = now - this.lastDraw;
+    if (!moving || dt > 100 || now - this.lastChange < 400) { this.slowSum = this.slowCount = 0; return; }   // only unbroken runs of frames count
+    this.slowSum += dt;
+    if (++this.slowCount < 60) return;
+    const average = this.slowSum / this.slowCount;
+    this.slowSum = this.slowCount = 0;
+    if (average > 28 && this.quality > 0.72) { this.quality = Math.max(0.72, this.quality * 0.86); this.lastChange = now; this.resize(); }
   }
 
   // ---------- pointer ----------
