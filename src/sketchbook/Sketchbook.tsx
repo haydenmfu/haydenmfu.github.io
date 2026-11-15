@@ -22,10 +22,14 @@ export default function Sketchbook() {
   const [travelling, setTravelling] = useState(false);
 
   useEffect(() => {
-    let started = false, moved = false;
+    let started = false, moved = false, shown: SectionId = 'about';
     const e = new Engine(canvas.current!, sections, ownerName, {
       mode(m, s) {
-        setMode(m); setSection(s);
+        setMode(m);
+        if (s !== shown) { shown = s; setSection(s); setStop(0); setOpen(false); }   // a new line starts with no page open
+        if (m === 'entering' || m === 'opening') { moved = false; setWalked(false); }
+        if (m === 'path') history.replaceState(null, '', `#${s}`);
+        if (m === 'cover' && started) history.replaceState(null, '', location.pathname + location.search);
         if (m === 'cover' && !started) {   // a link straight to a section skips the cover
           started = true;
           const hash = decodeURIComponent(location.hash.slice(1)).toLowerCase();
@@ -35,9 +39,6 @@ export default function Sketchbook() {
             if (q.has('stop') && sections[hash].stops[n - 1]) { setStop(n - 1); setOpen(true); }
           }
         }
-        if (m === 'path') history.replaceState(null, '', `#${s}`);
-        if (m === 'cover' && started) history.replaceState(null, '', location.pathname);
-        if (m === 'entering' || m === 'opening') { moved = false; setWalked(false); }
       },
       openStop(i, rect) { from.current = rect; setStop(i); setOpen(true); },
       progress(u, range) {
@@ -53,7 +54,7 @@ export default function Sketchbook() {
   // The line stops being drawn while a page covers it.
   useEffect(() => { engine.current?.pause(open); }, [open]);
 
-  const sec = sections[section], stops = sec.stops, current = stops[Math.min(stop, stops.length - 1)];
+  const sec = sections[section], stops = sec.stops, at = Math.min(stop, stops.length - 1), current = stops[at];
   const inPath = mode === 'path';
 
   // Leave this stop, walk the line, and arrive in another.
@@ -71,7 +72,7 @@ export default function Sketchbook() {
     const key = (ev: KeyboardEvent) => {
       const e = engine.current; if (!e) return;
       if (ev.key === 'Escape') { if (open) setOpen(false); else void e.close(); return; }
-      if (open) { if (ev.key === 'ArrowRight' && stop < stops.length) void travel(stop + 1); if (ev.key === 'ArrowLeft' && stop > 0) void travel(stop - 1); return; }
+      if (open) { if (ev.key === 'ArrowRight') void travel(Math.min(stop, stops.length - 1) + 1); if (ev.key === 'ArrowLeft' && stop > 0) void travel(stop - 1); return; }
       if (e.mode !== 'path') return;
       const step: Record<string, number> = { ArrowDown: 1.6, ArrowUp: -1.6, PageDown: 6, PageUp: -6, ' ': 6, Home: -1e3, End: 1e3 };
       if (ev.key in step) { ev.preventDefault(); e.walkBy(step[ev.key]); }
@@ -108,7 +109,7 @@ export default function Sketchbook() {
   const hold = (ev: PointerEvent<HTMLElement>) => { pointer.current.held = true; ev.currentTarget.setPointerCapture(ev.pointerId); band(2600, true); };
   const release = () => { if (pointer.current.held) { pointer.current.held = false; band(46, true); } };
 
-  const last = stop >= stops.length - 1;
+  const last = at >= stops.length - 1;
   return (
     <div className="sb" data-mode={mode} data-open={open} style={{ '--line': sec.color } as CSSProperties}>
       <canvas ref={canvas} className="sb-stage" aria-hidden="true" />
@@ -146,15 +147,15 @@ export default function Sketchbook() {
       </div>
 
       <aside className="sb-plate" aria-hidden={!open}>
-        <figure ref={figure} data-photo={!!current?.art?.photo} style={{ '--ar': current?.art?.ratio ?? 0.75 } as CSSProperties}
+        <figure ref={figure} data-photo={!!current?.art?.photo} data-sheet={!!current?.art?.sheet} style={{ '--ar': current?.art?.ratio ?? 0.75 } as CSSProperties}
           onPointerMove={move} onPointerDown={hold} onPointerUp={release} onPointerCancel={release}>
           {current?.art
             ? <><img src={current.art.sketch} alt={`Pencil drawing: ${current.title}`} draggable={false} />{current.art.photo && <img ref={photo} className="sb-photo" src={current.art.photo} alt="" draggable={false} />}</>
-            : <div className="sb-blank"><b>{number(stop)}</b><span className="sb-mono">Not yet drawn</span></div>}
+            : <div className="sb-blank"><b>{number(at)}</b><span className="sb-mono">Not yet drawn</span></div>}
         </figure>
         {current && (
           <div className="sb-notes">
-            <p className="sb-mono sb-no">No. {number(stop)} / {sec.label}</p>
+            <p className="sb-mono sb-no">No. {number(at)} / {sec.label}</p>
             <h2>{current.title}</h2>
             <p className="sb-mono sb-when">{current.meta}</p>
             {current.body.map(p => <p className="sb-body" key={p}>{p}</p>)}
@@ -163,8 +164,8 @@ export default function Sketchbook() {
             <div className="sb-rule" />
             {current.art?.photo && <p className="sb-mono sb-how">Move across the drawing. Hold to see the photograph.</p>}
             <div className="sb-walk">
-              {stop > 0 && <button className="sb-mono" onClick={() => void travel(stop - 1)}><span aria-hidden="true">←</span> {stops[stop - 1].title}</button>}
-              <button className="sb-mono sb-next" onClick={() => void travel(stop + 1)}>{last ? 'Walk to the end of the line' : <>Next: {stops[stop + 1].title}</>} <span aria-hidden="true">→</span></button>
+              {at > 0 && <button className="sb-mono" onClick={() => void travel(at - 1)}><span aria-hidden="true">←</span> {stops[at - 1].title}</button>}
+              <button className="sb-mono sb-next" onClick={() => void travel(at + 1)}>{last ? 'Walk to the end of the line' : <>Next: {stops[at + 1].title}</>} <span aria-hidden="true">→</span></button>
             </div>
           </div>
         )}

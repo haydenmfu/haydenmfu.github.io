@@ -26,10 +26,10 @@ BOARD, OVER, SPINE = 0.24, 0.38, 0.3
 LIGHT = np.array([-0.50, 0.42, 0.76]) / np.linalg.norm([-0.50, 0.42, 0.76])
 LABEL = (2.6, 11.4, 12.4, 16.6)     # x0, y0, x1, y1 on the front cover
 RIBBONS = [  # exit x, end point (x, y), bend, name, how far through the book it marks
-    (3.4, (-3.2, -7.4), -2.0, "about", 0.22),
+    (3.4, (-2.6, -7.4), -2.0, "about", 0.22),
     (6.2, (4.4, -9.3), 1.6, "projects", 0.42),
-    (8.8, (11.6, -8.9), -1.4, "events", 0.60),
-    (11.4, (19.0, -6.8), 2.2, "resume", 0.80),
+    (8.8, (11.4, -8.9), -1.4, "research", 0.60),
+    (11.4, (17.8, -6.8), 2.2, "resume", 0.80),
 ]
 LEVEL = [BOARD + (T - 2 * BOARD) * (1 - r[4]) for r in RIBBONS]   # height of each ribbon's page
 RIBBON_W = 0.62
@@ -218,16 +218,18 @@ class Scene:
 
 
 def compose(texture):
-    """Bring the camera as close as it can come with the closed book and all four ribbons, and
-    the labels set under the ribbon ends, still inside the frame; then centre the picture."""
+    """Bring the camera as close as it can come with the closed book in the middle of the frame
+    and all four ribbons, and the labels set under their ends, still inside it."""
     for dist in np.arange(84.0, 130.0, 1.0):
         Scene.DIST0, Scene.SHIFT = dist, (0.0, 0.0)
         sc = Scene(0, texture, 0)
         corners = np.array([[x, y, z] for x in (-SPINE, W + OVER) for y in (-OVER, H + OVER) for z in (0, T)])
         pts = np.concatenate([sc.project(corners)] + [sc.project(c) for _, c, _ in sc.ribbon_strips()]) / SS
         lo, hi = pts.min(0), pts.max(0)
-        if hi[0] - lo[0] <= FW - 150 and hi[1] - lo[1] <= FH - 120:
-            Scene.SHIFT = (FW / 2 - (lo[0] + hi[0]) / 2, FH / 2 - 22 - (lo[1] + hi[1]) / 2)
+        book = sc.project(corners) / SS
+        dx = FW / 2 - (book[:, 0].min() + book[:, 0].max()) / 2   # the book itself sits in the middle
+        if lo[0] + dx >= 50 and hi[0] + dx <= FW - 50 and hi[1] - lo[1] <= FH - 120:
+            Scene.SHIFT = (dx, FH / 2 - 22 - (lo[1] + hi[1]) / 2)
             return
     raise SystemExit("the book does not fit the frame")
 

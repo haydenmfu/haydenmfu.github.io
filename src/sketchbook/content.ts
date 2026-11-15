@@ -4,9 +4,10 @@ import { profile } from '../data/profile';
 import { projects } from '../data/projects';
 
 export interface Art {
-  sketch: string;   // pencil render
-  photo?: string;   // the photograph it was drawn from, same size, shown as a strip of colour
+  sketch: string;   // pencil render, or any picture that should stand at the stop
+  photo?: string;   // the photograph a pencil render was drawn from, same size, shown as a strip of colour
   ratio: number;    // width / height
+  sheet?: boolean;  // a document page: stands with crisp edges instead of fading out like a drawing
 }
 
 export interface Stop {
@@ -25,7 +26,7 @@ export interface Section {
   stops: Stop[];
 }
 
-export type SectionId = 'about' | 'projects' | 'events' | 'resume';
+export type SectionId = 'about' | 'projects' | 'research' | 'resume';
 
 const plate = (name: string, ratio = 0.75): Art => ({
   sketch: `/sketchbook/plates/${name}_s.webp`,
@@ -33,13 +34,24 @@ const plate = (name: string, ratio = 0.75): Art => ({
   ratio,
 });
 
+const project = (title: string): Stop => {
+  const p = projects.find(q => q.title === title)!;
+  return { title: p.title, meta: `${p.category} / ${p.year}`, body: [p.description], tags: p.tags, links: p.link ? [{ href: p.link, label: p.linkLabel ?? 'Read more' }] : undefined };
+};
+const club = experience.find(e => e.org === 'Cornell Cybersecurity Club')!;
+const sentences = (text: string) => text.split(/(?<=\.)\s+/);
+
+// About: who, what, lately, where, what next, and how to reach me. One thing per stop.
 const aboutStops: Stop[] = [
-  { title: profile.name, meta: `${profile.school} / ${profile.degree}`, body: about.story, art: plate('killian') },
-  { title: 'Right now', meta: profile.location, body: about.current },
+  { title: profile.name, meta: `${profile.school} / ${profile.degree}`, body: [about.story[0]], art: plate('killian') },
+  { title: 'What I build', meta: 'Software, data pipelines, AI evaluation', body: [about.story[1]] },
+  { title: 'Lately', meta: '2026', body: [about.current[0]] },
+  { title: 'Where I am', meta: profile.location, body: [`I study ${profile.degree.toLowerCase()} at ${profile.school}. I'm in ${profile.location.replace('; the', ', and the')}.`] },
+  { title: 'What I am looking for', meta: profile.availability, body: [about.current[1]] },
   {
     title: 'Say hello',
-    meta: profile.availability,
-    body: [about.contact],
+    meta: profile.email,
+    body: [sentences(about.contact).slice(-1)[0]],
     links: [
       { href: `mailto:${profile.email}`, label: profile.email },
       { href: profile.github, label: 'GitHub' },
@@ -48,51 +60,60 @@ const aboutStops: Stop[] = [
   },
 ];
 
-const projectStops: Stop[] = projects.map(p => ({
-  title: p.title,
-  meta: `${p.category} / ${p.year}`,
-  body: [p.description],
-  tags: p.tags,
-  links: p.link ? [{ href: p.link, label: p.linkLabel ?? 'Read more' }] : undefined,
-}));
-
-const eventStops: Stop[] = [
+// Projects: things built for their own sake, and at hackathons and competitions.
+const projectStops: Stop[] = [
   {
-    title: 'MIT Energy & Climate Hack',
-    meta: '6 to 8 November 2026 / Exowatt track',
+    title: 'The Hive',
+    meta: 'MIT Energy & Climate Hack / November 2026',
     body: [
-      'Our team built The Hive: a connectivity system for fleets of robots building remote solar sites, with a deterministic 3D simulator that runs in the browser. A Wi-Fi HaLow mesh carries data and LoRa carries safety messages.',
+      'Our team built a connectivity system for fleets of robots building remote solar sites, with a deterministic 3D simulator that runs in the browser. A Wi-Fi HaLow mesh carries data and LoRa carries safety messages.',
       'I built the simulation engine and framework, the task coordination, and the visual models. In simulation, disconnections fell from as much as 61% to 2% or less.',
     ],
     tags: ['TypeScript', 'three.js', 'Vite', 'Cloudflare Workers'],
     links: [{ href: 'https://thehive.boston/', label: 'See The Hive' }],
     art: plate('hack', 0.667),
   },
-  { title: 'Dusk, the first evening', meta: '6 November 2026', body: ['From the weekend of the hack.'], art: plate('dusk') },
-  { title: 'The last afternoon', meta: '8 November 2026', body: ['From the weekend of the hack.'], art: plate('street') },
+  project('SASH: Search Across Six Hops'),
   {
-    title: 'Big Red Hacks',
-    meta: 'October 2026 / Capital One and Solana track winner',
-    body: ['Our team built SASH, Search Across Six Hops: it finds a person by their attributes through a chain of referral links and splits a reward across the chain. It won the Capital One Nessie track and the Solana track.'],
-    tags: ['Next.js', 'TypeScript', 'PostgreSQL', 'Solana devnet'],
+    title: 'Pencil sketches from photographs',
+    meta: 'Personal project / 2026',
+    body: [
+      'A tool that turns a photograph into a pencil drawing without changing anything in it. A line-art network traces the edges, and the shading is laid in shape by shape with straight strokes, the way it is done by hand. No generative model is involved, so nothing is invented.',
+      'Every drawing on this site came out of it, including the book on the cover. Move across this one to see the photograph underneath.',
+    ],
+    tags: ['Python', 'PyTorch', 'OpenCV'],
+    art: plate('street'),
   },
   {
-    title: 'BSides NYC CTF',
-    meta: 'Cornell Cybersecurity Club',
-    body: ['Our team placed first. I have also competed in AmateursCTF, OSU CTF and BuckeyeCTF with the club.'],
+    title: 'Dive',
+    meta: 'Personal project / ongoing',
+    body: [
+      'A matchmaking app where you design your own matching algorithm. You build a formula, a graph of questions that leads from a start to an end, and it decides who is compatible with you. Your rules stay private.',
+      'It is a personal prototype, not a live service: accounts, a visual formula editor with four kinds of question, a review queue and mutual matching, with an auto-layout of my own for the graph. I am reworking its design now.',
+    ],
+    tags: ['JavaScript', 'Node.js', 'SQLite', 'SVG'],
   },
+  { title: 'Capture the flag', meta: `${club.org} / ${club.period}`, body: [club.description] },
 ];
 
+// Research: work done with a lab or a research group.
+const researchStops: Stop[] = ['LLM Prediction Markets', 'Irrigation Data Assimilation', 'Lake-Effect Snow Forecasting'].map(project);
+
+// Résumé: the two documents, nothing else. Everything in them is already on the other lines.
 const resumeStops: Stop[] = [
-  ...experience.map(e => ({ title: e.org, meta: `${e.role} / ${e.period}`, body: [e.description] })),
   {
-    title: 'The résumé itself',
-    meta: 'PDF',
-    body: ['The same story on one page.'],
-    links: [
-      { href: profile.resume, label: 'Software engineering résumé' },
-      { href: profile.resumeDataAnalytics, label: 'Data analytics résumé' },
-    ],
+    title: 'Software engineering',
+    meta: 'Résumé / PDF',
+    body: ['One page, written for software engineering roles.'],
+    links: [{ href: profile.resume, label: 'Open the PDF' }],
+    art: { sketch: '/resumes/swe.png', ratio: 0.773, sheet: true },
+  },
+  {
+    title: 'Data analytics',
+    meta: 'Résumé / PDF',
+    body: ['One page, written for data and analytics roles.'],
+    links: [{ href: profile.resumeDataAnalytics, label: 'Open the PDF' }],
+    art: { sketch: '/resumes/data-analytics.png', ratio: 0.773, sheet: true },
   },
 ];
 
@@ -100,9 +121,9 @@ const resumeStops: Stop[] = [
 export const sections: Record<SectionId, Section> = {
   about: { id: 'about', label: 'About', color: '#5f7d3c', stops: aboutStops },
   projects: { id: 'projects', label: 'Projects', color: '#c9960f', stops: projectStops },
-  events: { id: 'events', label: 'Events', color: '#b6532a', stops: eventStops },
+  research: { id: 'research', label: 'Research', color: '#b6532a', stops: researchStops },
   resume: { id: 'resume', label: 'Résumé', color: '#2f4a8a', stops: resumeStops },
 };
 
-export const sectionOrder: SectionId[] = ['about', 'projects', 'events', 'resume'];
+export const sectionOrder: SectionId[] = ['about', 'projects', 'research', 'resume'];
 export const ownerName = profile.name;

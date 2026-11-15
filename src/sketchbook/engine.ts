@@ -16,17 +16,28 @@ export interface Callbacks {
 
 type Vec = { x: number; y: number; z: number };
 type Screen = { x: number; y: number; z: number; s: number };
-interface Card { sketch: HTMLCanvasElement; photo?: HTMLCanvasElement; ratio: number; open: number }
+interface Card { sketch: HTMLCanvasElement; photo?: HTMLCanvasElement; far: HTMLCanvasElement; farPhoto?: HTMLCanvasElement; ratio: number; open: number }
+
+// A third-size copy, drawn instead of the full one while the stop is still far off.
+function shrink(src: HTMLCanvasElement) {
+  const c = document.createElement('canvas'); c.width = Math.round(src.width / 3); c.height = Math.round(src.height / 3);
+  const g = c.getContext('2d')!; g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, c.width, c.height);
+  return c;
+}
+function makeCard(sketch: HTMLCanvasElement, ratio: number, photo?: HTMLCanvasElement): Card {
+  return { sketch, photo, far: shrink(sketch), farPhoto: photo && shrink(photo), ratio, open: 0 };
+}
 
 const GRAPHITE = '38,38,42';
 const BASE = '/sketchbook';
 // Must match tools/manga/book_frames.py: ribbon width, page height, where each ribbon leaves the foot.
 const RIBBON_W = 0.62, PAGE_H = 21, STRAIGHT = 0.36;
-const EXIT: Record<SectionId, number> = { about: 3.4, projects: 6.2, events: 8.8, resume: 11.4 };
+const EXIT: Record<SectionId, number> = { about: 3.4, projects: 6.2, research: 8.8, resume: 11.4 };
 // The walk.
-const LINE_W = 0.06, CARD_H = 2.9, FIRST = 13, STEP = 8, SIDE = 2.75, CAM0 = 3, VIEW = 6.4;
+const LINE_W = 0.075, CARD_H = 2.9, FIRST = 13, STEP = 8, SIDE = 2.75, CAM0 = 3, VIEW = 6.4;
 const TOP = { y: 10.5, z: 3.2 };   // where the camera hangs, looking straight down, when the book hands over
 const OPEN_MS = 1750, ENTER_MS = 2000, CLOSE_MS = 1000;
+const FRAME_SCALE = 0.8;   // opening frames are held decoded at this share of their size; they are only ever seen moving
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 /** How long a line with this many stops is, and where along it you stand to look at stop i. */
@@ -41,10 +52,6 @@ function rng(seed: number) {
 const loadImage = (src: string) => new Promise<HTMLImageElement>((res, rej) => {
   const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = rej; im.src = src;
 });
-function tint(hex: string, toWhite: number) {
-  const n = parseInt(hex.slice(1), 16), c = [n >> 16, n >> 8 & 255, n & 255].map(v => Math.round(v + (255 - v) * toWhite));
-  return `rgb(${c.join(',')})`;
-}
 
 // A drawing on a page does not end in a rectangle: fade it out to an uneven edge.
 function feather(img: CanvasImageSource, w: number, h: number, seed: number) {
@@ -60,6 +67,15 @@ function feather(img: CanvasImageSource, w: number, h: number, seed: number) {
   g.beginPath();
   pts.forEach((p, i) => { const q = pts[(i + 1) % pts.length], mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2; if (i) g.quadraticCurveTo(p[0], p[1], mx, my); else g.moveTo(mx, my); });
   g.closePath(); g.fill();
+  return c;
+}
+
+// A document rather than a drawing (a résumé page): it keeps its edges, with a pencil line round them.
+function sheet(img: CanvasImageSource, w: number, h: number) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d')!;
+  g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, w, h);
+  g.strokeStyle = `rgba(${GRAPHITE},.55)`; g.lineWidth = 3; g.strokeRect(1.5, 1.5, w - 3, h - 3);
   return c;
 }
 
@@ -91,13 +107,13 @@ export class Engine {
   private ctx: CanvasRenderingContext2D;
   private vw = 0; private vh = 0; private dpr = 1;
   private book!: Book;
-  private frames: Partial<Record<SectionId, HTMLImageElement[]>> = {};
+  private cover!: HTMLImageElement;   // the closed book: frame 0 of every opening
+  private frames: Partial<Record<SectionId, CanvasImageSource[]>> = {};
+  private busy = false;   // a ribbon has been chosen, or the book is being closed, and its frames are on their way
   private framesLoading: Partial<Record<SectionId, Promise<void>>> = {};
   private cards = new Map<string, Card>();
   private endCard?: Card;
   private shadow: HTMLCanvasElement;
-  private glowA = document.createElement('canvas');   // the line, small
-  private glowB = document.createElement('canvas');   // the same, blurred
   private marks: { x: number; z: number; n: number; len: number; a: number; w: number }[];
   private t0 = 0; private uTarget = 0;
   private tween: { from: number; to: number; t0: number; ms: number; done: () => void } | null = null;
@@ -106,7 +122,10 @@ export class Engine {
   private cam = { pos: { x: 0, y: 0, z: 0 }, f: 1, fwd: [0, 0, 1], right: [1, 0, 0], up: [0, 1, 0] };
   private raf = 0; private dirty = true; private paused = false; private veil = 0; private touchY: number | null = null;
   private off: (() => void)[] = [];
-  private dead = false;   // torn down: late image loads must not draw or call back
+  private dead = false;
+  private quality = 1;       // share of full resolution in use right now
+  private moveQuality = 1;   // the share this machine keeps up with while things move
+  private frameMs = 16; private lastDraw = 0; private lastChange = 0; private stillSince = 0;   // torn down: late image loads must not draw or call back
 
   constructor(private canvas: HTMLCanvasElement, private sections: Record<SectionId, Section>, private name: string, private cb: Callbacks) {
     this.ctx = canvas.getContext('2d')!;
@@ -144,33 +163,48 @@ export class Engine {
   private async load() {
     this.book = await (await fetch(`${BASE}/book/frames.json`)).json();
     const first = this.book.order[0];
-    const [cover] = await Promise.all([loadImage(`${BASE}/book/${first}/f00.webp`), document.fonts?.load('italic 40px Newsreader').catch(() => undefined)]);
+    const [cover] = await Promise.all([loadImage(this.frameUrl(first, 0)), document.fonts?.load('italic 40px Newsreader').catch(() => undefined)]);
     if (this.dead) return;
-    this.frames[first] = [cover];
+    this.cover = cover;
     const w = Math.round(this.book.size[0] * 0.5), h = Math.round(this.book.size[1] * 0.5);
-    this.endCard = { sketch: feather(cover, w, h, 3), ratio: w / h, open: 0 };
+    this.endCard = makeCard(feather(cover, w, h, 3), w / h);
     this.setMode('cover');
-    for (const id of this.book.order) await this.ensureFrames(id);   // the rest arrive behind the cover
+    // Bring the opening frames into the browser's cache behind the cover. They are decoded only when a ribbon is chosen.
+    for (const id of this.book.order) {
+      if (this.dead) return;
+      await Promise.all(this.book.anims[id].map((_, i) => i ? fetch(this.frameUrl(id, i)).then(r => r.blob()).catch(() => undefined) : undefined));
+    }
   }
 
+  private frameUrl(id: SectionId, i: number) { return `${BASE}/book/${id}/f${String(i).padStart(2, '0')}.webp`; }
+
+  /** Decode one ribbon's opening, and let go of any other: only one is ever held in memory. */
   private ensureFrames(id: SectionId) {
+    for (const other of this.book.order) {
+      const held = this.frames[other];
+      if (other === id || !held) continue;
+      for (const f of held) if (f !== this.cover) (f as ImageBitmap).close();
+      delete this.frames[other]; delete this.framesLoading[other];
+    }
     return this.framesLoading[id] ??= (async () => {
-      const n = this.book.anims[id].length;
-      const all = await Promise.all(Array.from({ length: n }, (_, i) => loadImage(`${BASE}/book/${id}/f${String(i).padStart(2, '0')}.webp`)));
-      await Promise.all(all.map(im => im.decode?.().catch(() => undefined)));
-      this.frames[id] = all;
-    })();
+      const w = Math.round(this.book.size[0] * FRAME_SCALE), h = Math.round(this.book.size[1] * FRAME_SCALE);
+      this.frames[id] = await Promise.all(this.book.anims[id].map(async (_, i) => {
+        if (i === 0) return this.cover;
+        const blob = await (await fetch(this.frameUrl(id, i))).blob();
+        return createImageBitmap(blob, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' }).catch(() => createImageBitmap(blob));
+      }));
+    })().catch(err => { delete this.framesLoading[id]; throw err; });
   }
 
   private ensureCards(id: SectionId) {
     this.sections[id].stops.forEach((stop, i) => {
       const key = `${id}:${i}`;
       if (this.cards.has(key)) return;
-      if (!stop.art) { this.cards.set(key, { sketch: blankSheet(i, this.sections[id].color), ratio: 0.75, open: 0 }); return; }
+      if (!stop.art) { this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), 0.75)); return; }
       const art = stop.art, h = 980, w = Math.round(h * art.ratio);
-      this.cards.set(key, { sketch: blankSheet(i, this.sections[id].color), ratio: art.ratio, open: 0 });   // until the drawing arrives
+      this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), art.ratio));   // until the drawing arrives
       void Promise.all([loadImage(art.sketch), art.photo ? loadImage(art.photo) : null]).then(([s, p]) => {
-        this.cards.set(key, { sketch: feather(s, w, h, 11 + i), photo: p ? feather(p, w, h, 11 + i) : undefined, ratio: art.ratio, open: 0 });
+        this.cards.set(key, makeCard(art.sheet ? sheet(s, w, h) : feather(s, w, h, 11 + i), art.ratio, p ? feather(p, w, h, 11 + i) : undefined));
         this.dirty = true;
       });
     });
@@ -181,19 +215,19 @@ export class Engine {
   private begin(id: SectionId) { this.section = id; this.u = this.uTarget = 0; this.tween = null; this.hover = null; this.ensureCards(id); }
 
   async open(id: SectionId) {
-    if (this.mode !== 'cover') return;
-    this.begin(id); this.canvas.style.cursor = 'progress';
-    await this.ensureFrames(id);
-    this.canvas.style.cursor = ''; this.t0 = performance.now(); this.setMode('opening');
+    if (this.mode !== 'cover' || this.busy) return;
+    this.busy = true; this.begin(id); this.canvas.style.cursor = 'progress';
+    try { await this.ensureFrames(id); } catch { return; } finally { this.busy = false; this.canvas.style.cursor = ''; }
+    this.t0 = performance.now(); this.setMode('opening');
   }
   /** Start inside a section with no animation (deep links). */
   jump(id: SectionId, u = 0) { this.begin(id); this.u = this.uTarget = clamp(u, 0, this.range); this.setMode('path'); }
   /** Step onto another line without going back to the cover. React keeps its controls up, so it is told 'path'. */
   switchTo(id: SectionId) { if (id === this.section || this.mode !== 'path') return; this.veil = 1; this.begin(id); this.t0 = performance.now(); this.mode = 'entering'; this.cb.mode('path', id); }
   async close() {
-    if (this.mode !== 'path') return;
-    this.tween = null; this.hover = null; this.mode = 'entering';   // hold still while the frames arrive, if they have not yet
-    await this.ensureFrames(this.section);
+    if ((this.mode !== 'path' && this.mode !== 'entering') || this.busy) return;
+    this.busy = true; this.tween = null; this.hover = null;
+    try { await this.ensureFrames(this.section); } catch { /* no frames: close without the animation */ } finally { this.busy = false; }
     this.t0 = performance.now(); this.setMode('closing');
   }
   pause(paused: boolean) { this.paused = paused; this.dirty = true; }
@@ -213,9 +247,8 @@ export class Engine {
   // ---------- geometry ----------
   private resize() {
     this.vw = window.innerWidth; this.vh = window.innerHeight;
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(3.6e6 / (this.vw * this.vh)));   // cap the pixels drawn per frame
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(3.2e6 / (this.vw * this.vh))) * this.quality;   // cap the pixels drawn per frame
     this.canvas.width = Math.round(this.vw * this.dpr); this.canvas.height = Math.round(this.vh * this.dpr);
-    for (const c of [this.glowA, this.glowB]) { c.width = Math.ceil(this.vw / 5); c.height = Math.ceil(this.vh / 5); }
     this.dirty = true;
   }
   private fit(grow = 0) {   // 0: the whole frame in view; 1: the frame fills the window
@@ -251,12 +284,12 @@ export class Engine {
   // ---------- the book ----------
   private tracePart(part: number[][]) { const g = this.ctx; g.beginPath(); part.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); }
   private drawBook(id: SectionId, i: number, alpha: number, chosen: SectionId | null, fade: number, grow: number) {
-    const img = this.frames[id]?.[i]; if (!img) return;
+    const img = i === 0 ? this.cover : this.frames[id]?.[i]; if (!img) return;
     const g = this.ctx, fit = this.fit(grow), fr = this.book.anims[id][i];
     g.save();
     g.globalAlpha = alpha;
     g.setTransform(this.dpr * fit.k, 0, 0, this.dpr * fit.k, this.dpr * fit.ox, this.dpr * fit.oy);
-    g.drawImage(img, 0, 0);
+    g.drawImage(img, 0, 0, this.book.size[0], this.book.size[1]);
     g.globalCompositeOperation = 'multiply';
     for (const r of fr.ribbons) {   // colour laid over the drawn ribbons; the chosen one never fades
       const hot = this.hover === r.name, mine = chosen === r.name;
@@ -332,50 +365,30 @@ export class Engine {
       g.beginPath(); for (let j = 0; j < b.length; j += 4) { g.moveTo(b[j], b[j + 1]); g.lineTo(b[j + 2], b[j + 3]); } g.stroke();
     });
 
-    // the line: a ribbon when the book hands it over, thinning to a line of light as you come down to walk it
-    const width = lerp(h.width, LINE_W, m), glow = m, pts: ({ x: number; y: number; nx: number; ny: number; a: number } | null)[] = [];
-    for (let z = camZ - 12; z < camZ + 56; z += 0.4) {
+    // The line: a ribbon when the book hands it over, drawn down to a pen stroke as you come to walk it.
+    // Like a line from a stylus, its weight swells and thins along its length.
+    const width = lerp(h.width, LINE_W, m), cap = lerp(60, 3.4, m);   // cap: the widest it may be on screen, in pixels
+    const pen: ({ x: number; y: number; nx: number; ny: number; a: number; k: number } | null)[] = [];
+    for (let z = Math.floor((camZ - 12) / 0.4) * 0.4; z < camZ + 56; z += 0.4) {   // sampled at fixed places, so the stroke does not shimmer as you move
       const l = this.project(this.side(z, -0.5, h)), r = this.project(this.side(z, 0.5, h));
-      pts.push(l.z > 0.25 && r.z > 0.25 ? { x: (l.x + r.x) / 2, y: (l.y + r.y) / 2, nx: r.x - l.x, ny: r.y - l.y, a: Math.round(this.fog(l.z) * 12) / 12 } : null);
+      if (l.z <= 0.25 || r.z <= 0.25) { pen.push(null); continue; }
+      const nx = r.x - l.x, ny = r.y - l.y, len = Math.hypot(nx, ny) || 1;
+      const press = 1 + m * (0.42 * Math.sin(z * 0.83 + 1.1) + 0.24 * Math.sin(z * 2.1 + 0.4) + 0.12 * Math.sin(z * 4.7));   // the hand pressing and easing off
+      pen.push({ x: (l.x + r.x) / 2, y: (l.y + r.y) / 2, nx, ny, a: Math.round(this.fog(l.z) * 12) / 12, k: Math.min(Math.max(width / 2 * press, 0.45 / len), cap * press / len) });
     }
-    // one unbroken shape per fog level; minPx keeps the far end from vanishing, maxPx keeps the near end a line
-    const band = (c: CanvasRenderingContext2D, half: number, minPx: number, maxPx: number, style: string, opacity: number, from = 0, to = pts.length - 1) => {
-      c.fillStyle = style;
-      for (let i = from; i < to;) {
-        const p = pts[i]; if (!p || !pts[i + 1]) { i++; continue; }
-        let j = i + 1; while (j < to && pts[j + 1] && pts[j]!.a === p.a) j++;
-        c.globalAlpha = p.a * opacity;
-        if (c.globalAlpha > 0.004) {
-          const edge = (q: NonNullable<typeof p>, sign: number, lift: number) => {
-            const len = Math.hypot(q.nx, q.ny) || 1, k = Math.min(Math.max(half, minPx / len), maxPx / len) * sign;
-            c.lineTo(q.x + q.nx * k, q.y + q.ny * k - lift);
-          };
-          c.beginPath();
-          for (let k = i; k <= j; k++) edge(pts[k]!, -1, k === j ? 0.8 : 0);
-          for (let k = j; k >= i; k--) edge(pts[k]!, 1, k === j ? 0.8 : 0);
-          c.fill();
-        }
-        i = j;
+    g.fillStyle = color;
+    for (let i = 0; i < pen.length - 1;) {   // one unbroken shape per fog level, so no seams show
+      const p = pen[i]; if (!p || !pen[i + 1]) { i++; continue; }
+      let j = i + 1; while (j < pen.length - 1 && pen[j + 1] && pen[j]!.a === p.a) j++;
+      g.globalAlpha = alpha * p.a;
+      if (g.globalAlpha > 0.004) {
+        g.beginPath();
+        for (let q = i; q <= j; q++) { const v = pen[q]!; g.lineTo(v.x - v.nx * v.k, v.y - v.ny * v.k - (q === j ? 0.8 : 0)); }
+        for (let q = j; q >= i; q--) { const v = pen[q]!; g.lineTo(v.x + v.nx * v.k, v.y + v.ny * v.k - (q === j ? 0.8 : 0)); }
+        g.fill();
       }
-    };
-    const cap = lerp(60, 4.5, m);   // widest the line may be on screen, in pixels: a ribbon above the page, a line once walking
-    const t = performance.now() / 1000, gap = 9, first = Math.floor((camZ - 4) / gap) * gap + (t * 3.2) % gap;
-    const pulses: number[] = [];   // light running ahead of you along the line
-    for (let z = first; z < camZ + 44; z += gap) { const i0 = Math.round((z - (camZ - 12)) / 0.4); if (i0 >= 1 && i0 + 4 < pts.length) pulses.push(i0); }
-    if (glow > 0.02) {
-      // the glow: the line drawn small, blurred, and laid back under the line itself
-      const a = this.glowA.getContext('2d')!, bq = this.glowB.getContext('2d')!, S = this.glowA.width / this.vw;
-      a.setTransform(1, 0, 0, 1, 0, 0); a.clearRect(0, 0, this.glowA.width, this.glowA.height); a.setTransform(S, 0, 0, S, 0, 0);
-      band(a, width * 1.5, 2.2, cap * 2, color, 1);
-      for (const i0 of pulses) band(a, width * 5, 7, cap * 4.5, tint(color, 0.15), 1, i0, i0 + 4);
-      for (const [blur, strength] of [[1.6, 0.6], [5, 0.45]]) {
-        bq.setTransform(1, 0, 0, 1, 0, 0); bq.clearRect(0, 0, this.glowB.width, this.glowB.height);
-        bq.filter = `blur(${blur}px)`; bq.drawImage(this.glowA, 0, 0); bq.filter = 'none';
-        g.globalAlpha = alpha * glow * strength; g.drawImage(this.glowB, 0, 0, this.vw, this.vh);
-      }
+      i = j;
     }
-    band(g, width / 2, 0.55, cap, color, alpha);
-    if (glow > 0.02) for (const i0 of pulses) band(g, width * 0.62, 0.8, cap * 0.7, tint(color, 0.6), alpha * glow, i0, i0 + 4);
     g.globalAlpha = 1;
     this.layout(m, alpha);
     g.restore();
@@ -407,15 +420,16 @@ export class Engine {
       g.beginPath(); g.ellipse(s.on.x, s.on.y, 0.2 * s.on.s, 0.2 * s.on.s * Math.abs(this.cam.fwd[1]) + 0.02 * s.on.s, 0, 0, 7); g.stroke();
       g.drawImage(this.shadow, s.b.x - w * 0.6, s.b.y - w * 0.08, w * 1.2, w * 0.16);
       // the drawing stands upright on the ground: map the image onto top edge -> foot
-      const iw = card.sketch.width, ih = card.sketch.height, lift = card.open * 0.05 * sc;
+      const small = rect.h * this.dpr < card.far.height, img = small ? card.far : card.sketch, pic = small ? card.farPhoto : card.photo;
+      const iw = img.width, ih = img.height, lift = card.open * 0.05 * sc;
       g.save();
       g.transform(w / iw, 0, (s.b.x - s.t.x) / ih, (s.b.y - s.t.y) / ih, s.t.x - w / 2, s.t.y - lift);
-      g.drawImage(card.sketch, 0, 0);
-      if (card.photo) {   // one streak of the photograph, parallel to the pencil strokes
+      g.drawImage(img, 0, 0);
+      if (pic) {   // one streak of the photograph, parallel to the pencil strokes
         const half = iw * (0.014 + 0.075 * card.open), cx = iw * (0.5 + 0.1 * Math.sin(s.i * 2.4)), dx = Math.cos(50 * Math.PI / 180), dy = -Math.sin(50 * Math.PI / 180), R = ih;
         g.beginPath(); g.moveTo(cx - dx * R + dy * half, ih / 2 - dy * R - dx * half); g.lineTo(cx + dx * R + dy * half, ih / 2 + dy * R - dx * half);
         g.lineTo(cx + dx * R - dy * half, ih / 2 + dy * R + dx * half); g.lineTo(cx - dx * R - dy * half, ih / 2 - dy * R + dx * half); g.clip();
-        g.drawImage(card.photo, 0, 0);
+        g.drawImage(pic, 0, 0);
       }
       g.restore();
       if (sc > 24 && s.b.z > 3.2) {   // caption on the ground, between the drawing and the line
@@ -427,6 +441,8 @@ export class Engine {
         const room = Math.abs(s.on.x - x) - 0.14 * cs, wide = g.measureText(label).width;   // keep the title clear of the line
         if (wide > room) g.font = `italic 400 ${0.17 * cs * Math.max(0.6, room / wide)}px Newsreader, Georgia, serif`;
         g.fillText(label, x, s.b.y - 0.15 * cs);
+        const tw = g.measureText(label).width;
+        this.rects.push({ key: s.key, rect: { x: (inner > 0 ? x : x - tw) - 8, y: s.b.y - 0.48 * cs, w: tw + 16, h: 0.56 * cs } });
         g.font = `500 ${Math.max(0.06 * cs, 7)}px "IBM Plex Mono", monospace`;
         g.fillStyle = sec.color; g.fillText(s.stop ? `NO. ${String(s.i + 1).padStart(2, '0')}` : 'THE END OF THE LINE', x, s.b.y - 0.37 * cs);
         if (hot) { const tw = Math.min(0.9 * cs, 120); g.fillRect(inner > 0 ? x : x - tw, s.b.y - 0.09 * cs, tw, Math.max(1.5, 0.012 * cs)); }
@@ -439,8 +455,18 @@ export class Engine {
   private tick = (now: number) => {
     this.raf = requestAnimationFrame(this.tick);
     if (this.mode === 'loading' || this.paused) return;
-    if (this.mode === 'cover' && !this.dirty) return;   // a still drawing: nothing to redo
-    this.dirty = false;
+    let moving = this.mode !== 'cover' && this.mode !== 'path';
+    if (this.mode === 'path') {
+      if (this.tween) {
+        const tw = this.tween, k = clamp((now - tw.t0) / tw.ms);
+        this.u = this.uTarget = lerp(tw.from, tw.to, ease(k)); moving = true;
+        if (k >= 1) { this.tween = null; tw.done(); }
+      } else if (Math.abs(this.uTarget - this.u) > 0.002) { this.u = lerp(this.u, this.uTarget, 0.13); moving = true; }
+      else this.u = this.uTarget;
+    }
+    if (!moving && !this.dirty && this.veil <= 0.01) { this.settle(now); return; }   // nothing has changed: draw nothing
+    this.pace(now, moving);
+    this.dirty = false; this.lastDraw = now;
     const g = this.ctx, t = now - this.t0, id = this.section;
     g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#fff'; g.fillRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.mode === 'cover') this.drawBook(this.book.order[0], 0, 1, null, 0, 0);
@@ -458,16 +484,26 @@ export class Engine {
       this.drawBook(id, Math.max(0, Math.round(back * (n - 1))), 1, id, back, back);
       if (p >= 1) this.setMode('cover');
     } else {
-      if (this.tween) {
-        const tw = this.tween, k = clamp((now - tw.t0) / tw.ms);
-        this.u = this.uTarget = lerp(tw.from, tw.to, ease(k));
-        if (k >= 1) { this.tween = null; tw.done(); }
-      } else this.u = Math.abs(this.uTarget - this.u) < 0.002 ? this.uTarget : lerp(this.u, this.uTarget, 0.13);
       this.drawWorld(1, 1);
       this.cb.progress(this.u, this.range);
     }
     if (this.veil > 0.01) { g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = `rgba(255,255,255,${this.veil})`; g.fillRect(0, 0, this.canvas.width, this.canvas.height); this.veil *= 0.9; }
   };
+
+  /** While things move: if frames are coming late, draw fewer pixels. */
+  private pace(now: number, moving: boolean) {
+    if (now - this.lastDraw < 120) this.frameMs = this.frameMs * 0.88 + (now - this.lastDraw) * 0.12;
+    if (!moving) return;
+    this.stillSince = 0;
+    if (this.frameMs > 23 && this.moveQuality > 0.5 && now - this.lastChange > 500) { this.moveQuality = Math.max(0.5, this.moveQuality * 0.8); this.lastChange = now; this.frameMs = 16; }
+    if (this.quality !== this.moveQuality) { this.quality = this.moveQuality; this.resize(); }
+  }
+  /** Once everything has come to rest: one frame at full sharpness. */
+  private settle(now: number) {
+    if (this.quality === 1) return;
+    if (!this.stillSince) this.stillSince = now;
+    else if (now - this.stillSince > 220) { this.quality = 1; this.resize(); }
+  }
 
   // ---------- pointer ----------
   private cardAt(x: number, y: number) { for (let i = this.rects.length - 1; i >= 0; i--) { const r = this.rects[i].rect; if (x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h) return this.rects[i]; } return undefined; }

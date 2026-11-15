@@ -36,3 +36,6 @@ prototypes/sketchbook/assets/
 
 # Python
 __pycache__/
+
+# Photos waiting to be drawn (raw, personal)
+photos/

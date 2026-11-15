@@ -15,7 +15,7 @@ from PIL import Image
 
 from mangafy import load_rgb
 
-PLATES = {"dusk": "20261106_162248", "killian": "20261107_105621", "street": "20261108_153927", "hack": "MITClimateHacks-3"}
+PLATES = {"killian": "20261107_105621", "street": "20261108_153927", "hack": "MITClimateHacks-3"}
 
 
 def main():
