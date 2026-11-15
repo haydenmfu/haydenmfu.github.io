@@ -22,6 +22,7 @@ export interface Section {
   id: SectionId;
   label: string;
   color: string;    // the ribbon, and the line you walk
+  backdrop?: { src: string; ratio: number };   // a faint pencil skyline at the horizon of the line
   stops: Stop[];
 }
 
@@ -41,15 +42,16 @@ const sentences = (text: string) => text.split(/(?<=\.)\s+/);
 
 // About: who, what, lately, where, what next, and how to reach me. One thing per stop.
 const aboutStops: Stop[] = [
-  { title: profile.name, meta: `${profile.school} / ${profile.degree}`, body: [about.story[0]], art: plate('killian') },
-  { title: 'What I build', meta: 'Software, data pipelines, AI evaluation', body: [about.story[1]] },
-  { title: 'Lately', meta: '2026', body: [about.current[0]] },
-  { title: 'Where I am', meta: profile.location, body: [`I study ${profile.degree.toLowerCase()} at ${profile.school}. I'm in ${profile.location.replace('; the', ', and the')}.`] },
-  { title: 'What I am looking for', meta: profile.availability, body: [about.current[1]] },
+  { title: profile.name, meta: `${profile.school} / ${profile.degree}`, body: [about.story[0]], art: plate('portrait') },
+  { title: 'What I build', meta: 'Software, data pipelines, AI evaluation', body: [about.story[1]], art: plate('build') },
+  { title: 'Lately', meta: '2026', body: [about.current[0]], art: plate('lately') },
+  { title: 'Where I am', meta: profile.location, body: [`I study ${profile.degree.toLowerCase()} at ${profile.school}. I'm in ${profile.location.replace('; the', ', and the')}.`], art: plate('tower') },
+  { title: 'What I am looking for', meta: profile.availability, body: [about.current[1]], art: plate('window') },
   {
     title: 'Say hello',
     meta: profile.email,
     body: [sentences(about.contact).slice(-1)[0]],
+    art: plate('hello'),
     links: [
       { href: `mailto:${profile.email}`, label: profile.email },
       { href: profile.github, label: 'GitHub' },
@@ -71,7 +73,7 @@ const projectStops: Stop[] = [
     links: [{ href: 'https://thehive.boston/', label: 'See The Hive' }],
     art: plate('hack', 0.667),
   },
-  project('SASH: Search Across Six Hops'),
+  { ...project('SASH: Search Across Six Hops'), art: plate('sash') },
   {
     title: 'Pencil sketches from photographs',
     meta: 'Personal project / 2026',
@@ -94,7 +96,11 @@ const projectStops: Stop[] = [
 ];
 
 // Research: work done with a lab or a research group.
-const researchStops: Stop[] = ['LLM Prediction Markets', 'Irrigation Data Assimilation', 'Lake-Effect Snow Forecasting'].map(project);
+const researchStops: Stop[] = [
+  project('LLM Prediction Markets'),
+  { ...project('Irrigation Data Assimilation'), art: plate('irrigation') },
+  { ...project('Lake-Effect Snow Forecasting'), art: plate('snow', 1.333) },
+];
 
 // Résumé: the two documents, nothing else. Everything in them is already on the other lines.
 const resumeStops: Stop[] = [
@@ -114,11 +120,13 @@ const resumeStops: Stop[] = [
   },
 ];
 
+const ABOUT_SKY = 10.3, RESEARCH_SKY = 9.6;   // width / height of the two skyline strips
+
 // Ribbon colours: the mustard and blue are sampled from the photographs, the green and rust are close to them.
 export const sections: Record<SectionId, Section> = {
-  about: { id: 'about', label: 'About', color: '#5f7d3c', stops: aboutStops },
+  about: { id: 'about', label: 'About', color: '#5f7d3c', stops: aboutStops, backdrop: { src: '/sketchbook/backdrops/about.webp', ratio: ABOUT_SKY } },
   projects: { id: 'projects', label: 'Projects', color: '#c9960f', stops: projectStops },
-  research: { id: 'research', label: 'Research', color: '#b6532a', stops: researchStops },
+  research: { id: 'research', label: 'Research', color: '#b6532a', stops: researchStops, backdrop: { src: '/sketchbook/backdrops/research.webp', ratio: RESEARCH_SKY } },
   resume: { id: 'resume', label: 'Résumé', color: '#2f4a8a', stops: resumeStops },
 };
 

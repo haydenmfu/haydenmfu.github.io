@@ -112,6 +112,7 @@ export class Engine {
   private busy = false;   // a ribbon has been chosen, or the book is being closed, and its frames are on their way
   private framesLoading: Partial<Record<SectionId, Promise<void>>> = {};
   private cards = new Map<string, Card>();
+  private skies = new Map<SectionId, HTMLImageElement>();   // the skyline of each line that has one
   private endCard?: Card;
   private shadow: HTMLCanvasElement;
   private marks: { x: number; z: number; n: number; len: number; a: number; w: number }[];
@@ -196,11 +197,13 @@ export class Engine {
   }
 
   private ensureCards(id: SectionId) {
+    const sky = this.sections[id].backdrop;
+    if (sky && !this.skies.has(id)) void loadImage(sky.src).then(im => { this.skies.set(id, im); this.dirty = true; }).catch(() => undefined);
     this.sections[id].stops.forEach((stop, i) => {
       const key = `${id}:${i}`;
       if (this.cards.has(key)) return;
       if (!stop.art) { this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), 0.75)); return; }
-      const art = stop.art, h = 980, w = Math.round(h * art.ratio);
+      const art = stop.art, h = Math.round(980 * Math.min(1, 1 / art.ratio)), w = Math.round(h * art.ratio);
       this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), art.ratio));   // until the drawing arrives
       void Promise.all([loadImage(art.sketch), art.photo ? loadImage(art.photo) : null]).then(([s, p]) => {
         this.cards.set(key, makeCard(art.sheet ? sheet(s, w, h) : feather(s, w, h, 11 + i), art.ratio, p ? feather(p, w, h, 11 + i) : undefined));
@@ -343,6 +346,21 @@ export class Engine {
     if (alpha <= 0) { this.layout(m, 0); return; }
     g.save(); g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); g.lineCap = 'round';
 
+    // A faint skyline along the horizon: a thin strip, repeated mirrored so it has no end.
+    // It is far away, so it turns with you but never comes closer.
+    const sky = this.skies.get(this.section), flat = Math.hypot(this.cam.fwd[0], this.cam.fwd[2]);
+    if (sky && m > 0.02 && flat > 0.05) {
+      const horizon = this.vh / 2 + this.cam.f * this.cam.fwd[1] / flat, yaw = Math.atan2(this.cam.fwd[0], this.cam.fwd[2]);
+      const w = this.vh * 1.55, hgt = w * sky.height / sky.width, x0 = this.vw / 2 - w / 2 - this.cam.f * Math.tan(yaw) * 0.9, y = horizon - hgt * 0.66;
+      g.globalAlpha = alpha * m * 0.6;
+      for (let i = Math.floor(-x0 / w) - 1; x0 + i * w < this.vw; i++) {
+        if (x0 + (i + 1) * w < 0) continue;
+        if (i % 2) { g.save(); g.translate(x0 + (i + 1) * w, y); g.scale(-1, 1); g.drawImage(sky, 0, 0, w, hgt); g.restore(); }
+        else g.drawImage(sky, x0 + i * w, y, w, hgt);
+      }
+      g.globalAlpha = 1;
+    }
+
     // loose pencil marks on the ground: they are what makes the walking visible. Drawn in a few batches.
     const camZ = this.cam.pos.z, buckets: number[][] = [[], [], [], []];
     for (const k of this.marks) {
@@ -398,13 +416,14 @@ export class Engine {
     const g = this.ctx, sec = this.sections[this.section], h = this.handover();
     const all = [...sec.stops.map((stop, i) => ({ stop, i, key: i as number | 'end' })), { stop: null, i: sec.stops.length, key: 'end' as const }]
       .map(s => { const z = this.stopZ(s.i), side = s.i % 2 ? 1 : -1, base = this.side(z, side * SIDE, h);
-        return { ...s, side, on: this.project(this.side(z, 0, h)), b: this.project(base), t: this.project({ ...base, y: CARD_H * (s.stop ? 1 : 0.62) }) }; })
+        const card = s.stop ? this.cards.get(`${this.section}:${s.i}`) : this.endCard, tall = card ? CARD_H * (s.stop ? Math.min(1, 0.9 / card.ratio) : 0.62) : 0;
+        return { ...s, side, card, tall, on: this.project(this.side(z, 0, h)), b: this.project(base), t: this.project({ ...base, y: tall }) }; })
       .filter(s => s.b.z > 0.6 && s.on.z > 0.3).sort((p, q) => q.b.z - p.b.z);
     for (const s of all) {
       const a = this.fog(s.b.z) * alpha * m, sc = s.b.s;
-      const card = s.stop ? this.cards.get(`${this.section}:${s.i}`) : this.endCard;
+      const card = s.card;
       if (!card) continue;
-      const w = (s.t.y < s.b.y ? CARD_H * (s.stop ? 1 : 0.62) : 0) * card.ratio * sc;
+      const w = (s.t.y < s.b.y ? s.tall : 0) * card.ratio * sc;
       const rect = { x: s.t.x - w / 2, y: s.t.y, w, h: s.b.y - s.t.y };
       if (this.fog(s.b.z) > 0.05) this.rects.push({ key: s.key, rect });
       if (a < 0.02) continue;

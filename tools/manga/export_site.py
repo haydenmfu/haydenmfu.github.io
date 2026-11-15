@@ -1,40 +1,81 @@
 """Collect the sketchbook's drawn assets for the website (run on the Spark, from ~/manga-assets).
 
-  python export_site.py OUT_DIR      then copy OUT_DIR into the site's public/sketchbook/
+  python export_site.py OUT_DIR [--no-book]     then copy OUT_DIR into the site's public/sketchbook/
 
-Reads out/book (pencilled frames of the four openings, see book_frames.py), out/skin (pencil
-renders, see pencil.py) and in/ (the photographs). Writes
+Reads out/book (pencilled frames of the four openings, see book_frames.py), the pencil renders
+(see pencil.py) and the photographs they came from. Writes
   book/<ribbon>/fNN.webp, book/frames.json   the opening animations and their ribbon outlines
   plates/<name>_s.webp, plates/<name>_p.webp each drawing and the photograph it came from
+  backdrops/<line>.webp                      a strip of skyline for the horizon of a line, graphite on transparent
 """
 import json
 import sys
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
 from mangafy import load_rgb
 
-PLATES = {"killian": "20261107_105621", "street": "20261108_153927", "hack": "MITClimateHacks-3"}
+# name on the site -> (folder of pencil renders, folder of photographs, file stem)
+PLATES = {
+    "street": ("out/skin", "in", "20261108_153927"),
+    "hack": ("out/skin", "in", "MITClimateHacks-3"),
+    "portrait": ("out/plates2", "in2", "20261010_175435"),
+    "build": ("out/plates2", "in2", "20261013_230648"),
+    "lately": ("out/plates2", "in2", "20261004_145320"),
+    "tower": ("out/plates2", "in2", "20261010_174912"),
+    "window": ("out/plates2", "in2", "20261011_144948"),
+    "hello": ("out/plates2", "in2", "20261006_000110"),
+    "sash": ("out/plates2", "in2", "20261004_120912"),
+    "irrigation": ("out/plates2", "in2", "20260629_090842"),
+    "snow": ("out/plates2", "in2", "20251110_103749"),
+}
+LONG_SIDE = 1400
+# line -> (pencil render with alpha, top and bottom of the strip as fractions of its height)
+BACKDROPS = {
+    "about": ("out/bg/20261010_182154__pencil_alpha.png", 0.615, 0.745),    # Ithaca and its ridge, from the clock tower
+    "research": ("out/bg/20261010_175505__pencil_alpha.png", 0.405, 0.50),  # Cayuga Lake and the far shore
+}
+
+
+def backdrop(src, top, bottom, width=2200):
+    im = Image.open(src).convert("RGBA")
+    im = im.crop((0, round(top * im.height), im.width, round(bottom * im.height)))
+    im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+    a = np.asarray(im).astype(np.float32)
+    h, w = a.shape[:2]
+    y, x = np.linspace(0, 1, h)[:, None], np.linspace(0, 1, w)[None, :]
+    ramp = lambda v, lo, hi: np.clip((v - lo) / (hi - lo), 0, 1)   # noqa: E731
+    a[..., 3] *= ramp(y, 0.0, 0.15) * ramp(1 - y, 0.0, 0.55) + 0 * x   # soft above, dissolving into the paper below; hard at the sides, where copies meet
+    return Image.fromarray(a.astype(np.uint8), "RGBA")
+
 
 
 def main():
     out = Path(sys.argv[1])
-    meta = json.loads(Path("out/book/frames.json").read_text())
-    for name, frames in meta["anims"].items():
-        (out / "book" / name).mkdir(parents=True, exist_ok=True)
-        for i in range(len(frames)):
-            frame = Image.open(f"out/book/pencil/{name}_f{i:02d}__pencil.png").convert("L")
-            frame.save(out / f"book/{name}/f{i:02d}.webp", quality=72, method=6)
-    (out / "book/frames.json").write_text(json.dumps(meta, separators=(",", ":")))
+    if "--no-book" not in sys.argv:
+        meta = json.loads(Path("out/book/frames.json").read_text())
+        for name, frames in meta["anims"].items():
+            (out / "book" / name).mkdir(parents=True, exist_ok=True)
+            for i in range(len(frames)):
+                frame = Image.open(f"out/book/pencil/{name}_f{i:02d}__pencil.png").convert("L")
+                frame.save(out / f"book/{name}/f{i:02d}.webp", quality=72, method=6)
+        (out / "book/frames.json").write_text(json.dumps(meta, separators=(",", ":")))
     (out / "plates").mkdir(parents=True, exist_ok=True)
-    for name, src in PLATES.items():
-        sketch = Image.open(f"out/skin/{src}__pencil.png").convert("L")
-        photo = Image.fromarray(load_rgb(Path(f"in/{src}.jpg"), 1600)).resize(sketch.size, Image.LANCZOS)
-        size = (round(sketch.width * 1400 / sketch.height), 1400)
+    for name, (renders, photos, stem) in PLATES.items():
+        sketch = Image.open(f"{renders}/{stem}__pencil.png").convert("L")
+        photo = Image.fromarray(load_rgb(Path(f"{photos}/{stem}.jpg"), 1600)).resize(sketch.size, Image.LANCZOS)
+        k = LONG_SIDE / max(sketch.size)
+        size = (round(sketch.width * k), round(sketch.height * k))
         sketch.resize(size, Image.LANCZOS).save(out / f"plates/{name}_s.webp", quality=80, method=6)
         photo.resize(size, Image.LANCZOS).save(out / f"plates/{name}_p.webp", quality=82, method=6)
-        print(name, size)
+        print(name, size, round(size[0] / size[1], 3))
+    (out / "backdrops").mkdir(parents=True, exist_ok=True)
+    for line, (src, top, bottom) in BACKDROPS.items():
+        strip = backdrop(src, top, bottom)
+        strip.save(out / f"backdrops/{line}.webp", quality=78, method=6)
+        print("backdrop", line, strip.size, round(strip.width / strip.height, 3))
 
 
 if __name__ == "__main__":
