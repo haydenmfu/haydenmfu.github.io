@@ -16,6 +16,9 @@ dist-ssr
 fonts/
 personal/
 ADDING_CONTENT.md
+COMPUTE_RESOURCES.md
+test_photos/
+tools/manga/out/
 
 # Editor directories and files
 .vscode/*
@@ -27,3 +30,9 @@ ADDING_CONTENT.md
 *.njsproj
 *.sln
 *.sw?
+
+# Prototype assets are personal photos and renders
+prototypes/sketchbook/assets/
+
+# Python
+__pycache__/
