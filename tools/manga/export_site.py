@@ -43,10 +43,9 @@ FIGURES = {
     "scatter": ("in3/lake_effect.png",),             # black bars cut off, then stretched back from 1600 to 1920 wide (the dots are round again)
     "sixhops": ("in3/sixhops.png",),                 # the Six Hops demo screen
     "hive1": ("in3/hive1.png",),                     # screenshots of The Hive's simulator
-    "hive2": ("in3/hive2.png",),
     "hive3": ("in3/hive3.png",),
-    "dive1": ("in3/dive_swim.png", (0, 0, 1, 0.78)),           # Dive's sea prototype, without the prototype's own controls
-    "dive2": ("in3/dive_path.png", (0.15, 0.03, 0.85, 0.60)),
+    "dive1": ("in3/dive_branch.png",),               # Dive: a step on someone's path, and the fish builder
+    "dive2": ("in3/dive_fish.png",),
 }
 FIGURE_SIDE = 2000   # larger than a drawing: the lettering has to stay readable. Never enlarged.
 # line -> (pencil render with alpha, top and bottom of the strip as fractions of its height[, left and right as fractions of its width])

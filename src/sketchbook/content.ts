@@ -91,7 +91,6 @@ const projectStops: Stop[] = [
     art: plate('hack', 0.667, 'At the hack'),
     more: [
       figure('hive1', 1.982, 'The simulator: scouting a site'),
-      figure('hive2', 1.987, 'Following a scout at night'),
       figure('hive3', 1.962, 'A scout on its survey path'),
     ],
   },
@@ -120,8 +119,8 @@ const projectStops: Stop[] = [
       'It is a personal prototype, not a live service: accounts, a visual formula editor with four kinds of question, a review queue and mutual matching, with an auto-layout of my own for the graph. I am reworking its design now.',
     ],
     tags: ['JavaScript', 'Node.js', 'SQLite', 'SVG'],
-    art: figure('dive1', 2.051, 'A prototype of the new design: swim to an answer'),
-    more: [figure('dive2', 1.966, "A prototype of the new design: someone's path")],
+    art: figure('dive1', 1.6, "A step on someone's path"),
+    more: [figure('dive2', 1.6, 'Picking your fish: all anyone sees of you before a match')],
   },
 ];
 
