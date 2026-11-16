@@ -14,6 +14,7 @@ export interface Stop {
   title: string;
   meta: string;
   body: string[];
+  when?: string;    // shown in place of the stop's number where the date says more
   tags?: string[];
   links?: { href: string; label: string }[];
   art?: Art;        // the picture that stands beside the line; stops without one stand as blank sheets
@@ -36,13 +37,22 @@ const plate = (name: string, ratio = 0.75, caption?: string): Art => ({
   ratio,
   caption,
 });
-// A plot or a screenshot: shown whole, in graphite, with its own colours underneath.
-const figure = (name: string, ratio: number, caption?: string): Art => ({ ...plate(name, ratio, caption), sheet: true });
+// A plot or a screenshot: shown whole and in its own colours. Its colours carry its meaning, so it is the one
+// kind of picture here that is not turned to pencil.
+const figure = (name: string, ratio: number, caption?: string): Art => ({ sketch: `/sketchbook/plates/${name}.webp`, ratio, caption, sheet: true });
 export const pictures = (stop: Stop): Art[] => (stop.art ? [stop.art, ...(stop.more ?? [])] : []);
+
+// When each piece of work was done, from the résumés and the dates on the photographs.
+const WHEN: Record<string, string> = {
+  'SASH: Search Across Six Hops': 'Oct 2026',
+  'LLM Prediction Markets': 'May – Aug 2026',
+  'Irrigation Data Assimilation': 'Jun – Aug 2026',
+  'Lake-Effect Snow Forecasting': 'Since Nov 2025',
+};
 
 const project = (title: string): Stop => {
   const p = projects.find(q => q.title === title)!;
-  return { title: p.title, meta: `${p.category} / ${p.year}`, body: [p.description], tags: p.tags, links: p.link ? [{ href: p.link, label: p.linkLabel ?? 'Read more' }] : undefined };
+  return { title: p.title, when: WHEN[p.title], meta: `${p.category} / ${p.year}`, body: [p.description], tags: p.tags, links: p.link ? [{ href: p.link, label: p.linkLabel ?? 'Read more' }] : undefined };
 };
 const sentences = (text: string) => text.split(/(?<=\.)\s+/);
 
@@ -70,6 +80,7 @@ const aboutStops: Stop[] = [
 const projectStops: Stop[] = [
   {
     title: 'The Hive',
+    when: 'Nov 2026',
     meta: 'MIT Energy & Climate Hack / November 2026',
     body: [
       'Our team built a connectivity system for fleets of robots building remote solar sites, with a deterministic 3D simulator that runs in the browser. A Wi-Fi HaLow mesh carries data and LoRa carries safety messages.',
@@ -86,11 +97,12 @@ const projectStops: Stop[] = [
   },
   {
     ...project('SASH: Search Across Six Hops'),
-    art: figure('sixhops', 1.957, 'The demo screen'),
-    more: [plate('sash_team', 0.75, 'The team at Big Red Hacks'), plate('sash', 0.75, 'The prize')],
+    art: plate('sash_team', 0.75, 'The team at Big Red Hacks'),
+    more: [figure('sixhops', 1.957, 'The demo screen'), plate('sash_raffle', 0.75, 'Winning the raffle at the closing ceremony'), plate('sash', 0.75, 'The prize')],
   },
   {
     title: 'Pencil sketches from photographs',
+    when: 'Nov 2026',
     meta: 'Personal project / 2026',
     body: [
       'A tool that turns a photograph into a pencil drawing without changing anything in it. A line-art network traces the edges, and the shading is laid in shape by shape with straight strokes, the way it is done by hand. No generative model is involved, so nothing is invented.',
@@ -101,6 +113,7 @@ const projectStops: Stop[] = [
   },
   {
     title: 'Dive',
+    when: 'Since Oct 2026',
     meta: 'Personal project / ongoing',
     body: [
       'A matchmaking app where you design your own matching algorithm. You build a formula, a graph of questions that leads from a start to an end, and it decides who is compatible with you. Your rules stay private.',

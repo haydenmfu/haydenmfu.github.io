@@ -5,8 +5,8 @@
 Reads out/book (pencilled frames of the four openings, see book_frames.py), the pencil renders
 (see pencil.py) and the photographs they came from. Writes
   book/<ribbon>/fNN.webp, book/frames.json   the opening animations and their ribbon outlines
-  plates/<name>_s.webp, plates/<name>_p.webp each drawing and the photograph it came from;
-                                             for a figure, the plot in graphite and the plot in its own colours
+  plates/<name>_s.webp, plates/<name>_p.webp each drawing and the photograph it came from
+  plates/<name>.webp                         each plot or screenshot, in its own colours
   backdrops/<line>.webp                      a strip of skyline for the horizon of a line, graphite on transparent
 """
 import json
@@ -24,7 +24,8 @@ PLATES = {
     "hack": ("out/skin", "in", "MITClimateHacks-3"),
     "portrait": ("out/skin", "in", "20261107_105621"),
     "build": ("out/plates2", "in2", "20261013_230648"),
-    "lately": ("out/plates2", "in2", "20261004_145320"),
+    "lately": ("out/plates2", "in2", "20261114_203051"),
+    "sash_raffle": ("out/plates2", "in2", "20261004_145320"),
     "tower": ("out/plates2", "in2", "20261010_174912"),
     "window": ("out/plates2", "in2", "20261011_144948"),
     "coffee": ("out/plates2", "in2", "20260906_202003"),   # the guest wifi password on the table card is smudged in the source
@@ -34,22 +35,20 @@ PLATES = {
     "sash_team": ("out/plates2", "in2", "sash_team"),
 }
 LONG_SIDE = 1400
-# Figures from the research itself: shown as they are, in graphite, with their colours underneath.
-# name on the site -> (picture, whether the graphite version is turned light-on-dark to dark-on-light[, the part to keep,
-# as left, top, right, bottom fractions])
+# Plots and screenshots: published whole and in their own colours.
+# name on the site -> (picture[, the part to keep, as left, top, right, bottom fractions])
 FIGURES = {
-    "drift": ("out/paper/figure1.png", False),         # figure 1 of the forecasting paper, lifted from the PDF onto white
-    "particles": ("in3/irrigation_plot.png", False),   # as supplied
-    "scatter": ("in3/lake_effect.png", False),         # black bars cut off, then stretched back from 1600 to 1920 wide (the dots are round again)
-    "sixhops": ("in3/sixhops.png", True),              # the Six Hops demo screen: a dark screen, so its graphite version is drawn on white
-    "hive1": ("in3/hive1.png", False),                 # screenshots of The Hive's simulator
-    "hive2": ("in3/hive2.png", False),
-    "hive3": ("in3/hive3.png", False),
-    "dive1": ("in3/dive_swim.png", True, (0, 0, 1, 0.78)),          # Dive's sea prototype, without the prototype's own controls
-    "dive2": ("in3/dive_path.png", True, (0.15, 0.03, 0.85, 0.60)),
+    "drift": ("out/paper/figure1.png",),             # figure 1 of the forecasting paper, lifted from the PDF onto white
+    "particles": ("in3/irrigation_plot.png",),       # as supplied
+    "scatter": ("in3/lake_effect.png",),             # black bars cut off, then stretched back from 1600 to 1920 wide (the dots are round again)
+    "sixhops": ("in3/sixhops.png",),                 # the Six Hops demo screen
+    "hive1": ("in3/hive1.png",),                     # screenshots of The Hive's simulator
+    "hive2": ("in3/hive2.png",),
+    "hive3": ("in3/hive3.png",),
+    "dive1": ("in3/dive_swim.png", (0, 0, 1, 0.78)),           # Dive's sea prototype, without the prototype's own controls
+    "dive2": ("in3/dive_path.png", (0.15, 0.03, 0.85, 0.60)),
 }
 FIGURE_SIDE = 2000   # larger than a drawing: the lettering has to stay readable. Never enlarged.
-GRAPHITE = 38        # the darkest a figure gets, so its black sits with the pencil
 # line -> (pencil render with alpha, top and bottom of the strip as fractions of its height)
 BACKDROPS = {
     "about": ("out/bg/20261010_182154__pencil_alpha.png", 0.615, 0.745),    # Ithaca and its ridge, from the clock tower
@@ -89,19 +88,14 @@ def main():
         sketch.resize(size, Image.LANCZOS).save(out / f"plates/{name}_s.webp", quality=80, method=6)
         photo.resize(size, Image.LANCZOS).save(out / f"plates/{name}_p.webp", quality=82, method=6)
         print(name, size, round(size[0] / size[1], 3))
-    for name, (src, negative, *part) in FIGURES.items():
+    for name, (src, *part) in FIGURES.items():
         colour = Image.open(src).convert("RGB")
         if part:
             x0, y0, x1, y1 = part[0]
             colour = colour.crop((round(x0 * colour.width), round(y0 * colour.height), round(x1 * colour.width), round(y1 * colour.height)))
         k = min(1.0, FIGURE_SIDE / max(colour.size))
         colour = colour.resize((round(colour.width * k), round(colour.height * k)), Image.LANCZOS)
-        grey = np.asarray(colour.convert("L")).astype(np.float32)
-        if negative:
-            grey = 255 - grey
-        grey = Image.fromarray((GRAPHITE + grey * (255 - GRAPHITE) / 255).astype(np.uint8), "L")
-        grey.save(out / f"plates/{name}_s.webp", quality=84, method=6)
-        colour.save(out / f"plates/{name}_p.webp", quality=86, method=6)
+        colour.save(out / f"plates/{name}.webp", quality=86, method=6)
         print("figure", name, colour.size, round(colour.width / colour.height, 3))
     (out / "backdrops").mkdir(parents=True, exist_ok=True)
     for line, (src, top, bottom) in BACKDROPS.items():

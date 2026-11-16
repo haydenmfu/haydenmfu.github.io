@@ -10,13 +10,15 @@ export type Mode = 'loading' | 'cover' | 'opening' | 'entering' | 'path' | 'clos
 export interface Rect { x: number; y: number; w: number; h: number }
 export interface Callbacks {
   mode(mode: Mode, section: SectionId): void;
-  openStop(index: number, from: Rect): void;
+  openStop(index: number, from: Rect, picture: number): void;
   progress(u: number, range: number): void;
 }
 
 type Vec = { x: number; y: number; z: number };
 type Screen = { x: number; y: number; z: number; s: number };
-interface Card { sketch: HTMLCanvasElement; photo?: HTMLCanvasElement; far: HTMLCanvasElement; farPhoto?: HTMLCanvasElement; ratio: number; open: number; behind: number }
+interface Card { sketch: HTMLCanvasElement; photo?: HTMLCanvasElement; far: HTMLCanvasElement; farPhoto?: HTMLCanvasElement; ratio: number; open: number }
+const EXTRA = 3;   // how many of a stop's further pictures stand beside the first
+const cardKey = (id: string, stop: number, picture: number) => (picture ? `${id}:${stop}:${picture}` : `${id}:${stop}`);
 
 // A third-size copy, drawn instead of the full one while the stop is still far off.
 function shrink(src: HTMLCanvasElement) {
@@ -24,8 +26,8 @@ function shrink(src: HTMLCanvasElement) {
   const g = c.getContext('2d')!; g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, c.width, c.height);
   return c;
 }
-function makeCard(sketch: HTMLCanvasElement, ratio: number, photo?: HTMLCanvasElement, behind = 0): Card {
-  return { sketch, photo, far: shrink(sketch), farPhoto: photo && shrink(photo), ratio, open: 0, behind };
+function makeCard(sketch: HTMLCanvasElement, ratio: number, photo?: HTMLCanvasElement): Card {
+  return { sketch, photo, far: shrink(sketch), farPhoto: photo && shrink(photo), ratio, open: 0 };
 }
 
 const GRAPHITE = '38,38,42';
@@ -119,7 +121,7 @@ export class Engine {
   private t0 = 0; private uTarget = 0;
   private tween: { from: number; to: number; t0: number; ms: number; done: () => void } | null = null;
   private hover: SectionId | number | 'end' | null = null;
-  private rects: { key: number | 'end'; rect: Rect }[] = [];
+  private rects: { key: number | 'end'; rect: Rect; pic?: number }[] = [];   // pic: which picture of the stop; none for its caption
   private cam = { pos: { x: 0, y: 0, z: 0 }, f: 1, fwd: [0, 0, 1], right: [1, 0, 0], up: [0, 1, 0] };
   private raf = 0; private dirty = true; private paused = false; private veil = 0; private touchY: number | null = null;
   private off: (() => void)[] = [];
@@ -200,15 +202,17 @@ export class Engine {
     const sky = this.sections[id].backdrop;
     if (sky && !this.skies.has(id)) void loadImage(sky.src).then(im => { this.skies.set(id, im); this.dirty = true; }).catch(() => undefined);
     this.sections[id].stops.forEach((stop, i) => {
-      const key = `${id}:${i}`;
-      if (this.cards.has(key)) return;
-      if (!stop.art) { this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), 0.75)); return; }
-      const art = stop.art, h = Math.round(980 * Math.min(1, 1 / art.ratio)), w = Math.round(h * art.ratio);
-      this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), art.ratio));   // until the drawing arrives
-      void Promise.all([loadImage(art.sketch), art.photo ? loadImage(art.photo) : null]).then(([s, p]) => {
-        const stand = (im: HTMLImageElement) => (art.sheet ? sheet(im, w, h) : feather(im, w, h, 11 + i));
-        this.cards.set(key, makeCard(stand(s), art.ratio, p ? stand(p) : undefined, art.sheet ? stop.more?.length ?? 0 : 0));   // a soft-edged drawing has no sheet to stack
-        this.dirty = true;
+      if (!stop.art) { if (!this.cards.has(cardKey(id, i, 0))) this.cards.set(cardKey(id, i, 0), makeCard(blankSheet(i, this.sections[id].color), 0.75)); return; }
+      [stop.art, ...(stop.more ?? []).slice(0, EXTRA)].forEach((art, k) => {   // the others stand smaller, so they are kept smaller
+        const key = cardKey(id, i, k);
+        if (this.cards.has(key)) return;
+        const h = Math.round((k ? 620 : 980) * Math.min(1, 1 / art.ratio)), w = Math.round(h * art.ratio);
+        this.cards.set(key, makeCard(blankSheet(i, this.sections[id].color), art.ratio));   // until the drawing arrives
+        void Promise.all([loadImage(art.sketch), art.photo ? loadImage(art.photo) : null]).then(([s, p]) => {
+          const stand = (im: HTMLImageElement) => (art.sheet ? sheet(im, w, h) : feather(im, w, h, 11 + i + 7 * k));
+          this.cards.set(key, makeCard(stand(s), art.ratio, p ? stand(p) : undefined));
+          this.dirty = true;
+        });
       });
     });
   }
@@ -245,7 +249,7 @@ export class Engine {
     return new Promise<void>(done => { this.tween = { from: this.u, to: clamp(u, 0, this.range), t0: performance.now(), ms: Math.max(ms, 1), done }; });
   }
   /** Where stop i stands on screen right now, for growing its page out of it. */
-  rectOf(i: number): Rect | undefined { this.drawWorld(1, 0); return this.rects.find(r => r.key === i)?.rect; }
+  rectOf(i: number): Rect | undefined { this.drawWorld(1, 0); return this.rects.find(r => r.key === i && r.pic === 0)?.rect; }
 
   // ---------- geometry ----------
   private resize() {
@@ -412,51 +416,57 @@ export class Engine {
     g.restore();
   }
 
-  /** Stops beside the line, far to near. With alpha 0 it only measures where they stand. */
+  /** Stops beside the line, far to near. With alpha 0 it only measures where they stand.
+   *  A stop's first picture stands nearest the line; its others stand smaller in a row going outward from it. */
   private layout(m: number, alpha: number) {
     const g = this.ctx, sec = this.sections[this.section], h = this.handover();
-    const all = [...sec.stops.map((stop, i) => ({ stop, i, key: i as number | 'end' })), { stop: null, i: sec.stops.length, key: 'end' as const }]
-      .map(s => { const z = this.stopZ(s.i), side = s.i % 2 ? 1 : -1, base = this.side(z, side * SIDE, h);
-        const card = s.stop ? this.cards.get(`${this.section}:${s.i}`) : this.endCard, tall = card ? CARD_H * (s.stop ? Math.min(1, 0.9 / card.ratio) : 0.62) : 0;
-        return { ...s, side, card, tall, on: this.project(this.side(z, 0, h)), b: this.project(base), t: this.project({ ...base, y: tall }) }; })
+    const stands = [...sec.stops.map((stop, i) => ({ stop, i, key: i as number | 'end' })), { stop: null, i: sec.stops.length, key: 'end' as const }]
+      .flatMap(s => {
+        const z = this.stopZ(s.i), side = s.i % 2 ? 1 : -1, on = this.project(this.side(z, 0, h));
+        const cards = s.stop ? [0, ...(s.stop.more ?? []).slice(0, EXTRA).map((_, k) => k + 1)].map(k => this.cards.get(cardKey(this.section, s.i, k))) : [this.endCard];
+        let edge = 0;   // how far out from the line the row has reached
+        return cards.flatMap((card, pic) => {
+          if (!card) return [];
+          const tall = CARD_H * (s.stop ? Math.min(1, 0.9 / card.ratio) * (pic ? 0.6 : 1) : 0.62), wide = tall * card.ratio;
+          // the row runs sideways as seen from where you stand, and a little back, so every picture shows on a bend too
+          const out = pic ? edge + 0.2 + wide / 2 : 0, back = pic * 0.45, first = this.side(z, side * SIDE, h), [rx, , rz] = this.cam.right;
+          const base = { x: first.x + rx * side * out - rz * back, y: first.y, z: first.z + rz * side * out + rx * back };
+          edge = out + wide / 2;
+          return [{ ...s, side, card, tall, pic, on, b: this.project(base), t: this.project({ ...base, y: tall }) }];
+        });
+      })
       .filter(s => s.b.z > 0.6 && s.on.z > 0.3).sort((p, q) => q.b.z - p.b.z);
-    for (const s of all) {
-      const a = this.fog(s.b.z) * alpha * m, sc = s.b.s;
-      const card = s.card;
-      if (!card) continue;
+    for (const s of stands) {
+      const a = this.fog(s.b.z) * alpha * m, sc = s.b.s, card = s.card;
       const w = (s.t.y < s.b.y ? s.tall : 0) * card.ratio * sc;
       const rect = { x: s.t.x - w / 2, y: s.t.y, w, h: s.b.y - s.t.y };
-      if (this.fog(s.b.z) > 0.05) this.rects.push({ key: s.key, rect });
+      if (this.fog(s.b.z) > 0.05) this.rects.push({ key: s.key, rect, pic: s.pic });
       if (a < 0.02) continue;
       const hot = this.hover === s.key && this.mode === 'path';
       card.open = lerp(card.open, hot ? 1 : 0, 0.16);
       if (Math.abs(card.open - (hot ? 1 : 0)) > 0.01) this.dirty = true;
       g.globalAlpha = a;
-      // a dotted pencil lead from the line to the stop, and a ring on the line
-      g.strokeStyle = `rgba(${GRAPHITE},.5)`; g.lineWidth = clamp(0.012 * sc, 0.5, 1.3);
-      g.setLineDash([0.05 * sc, 0.09 * sc]); g.beginPath(); g.moveTo(s.on.x, s.on.y); g.lineTo(s.b.x, s.b.y); g.stroke(); g.setLineDash([]);
-      g.strokeStyle = sec.color; g.lineWidth = clamp(0.028 * s.on.s, 0.8, 3);
-      g.beginPath(); g.ellipse(s.on.x, s.on.y, 0.2 * s.on.s, 0.2 * s.on.s * Math.abs(this.cam.fwd[1]) + 0.02 * s.on.s, 0, 0, 7); g.stroke();
+      if (!s.pic) {   // a dotted pencil lead from the line to the stop, and a ring on the line
+        g.strokeStyle = `rgba(${GRAPHITE},.5)`; g.lineWidth = clamp(0.012 * sc, 0.5, 1.3);
+        g.setLineDash([0.05 * sc, 0.09 * sc]); g.beginPath(); g.moveTo(s.on.x, s.on.y); g.lineTo(s.b.x, s.b.y); g.stroke(); g.setLineDash([]);
+        g.strokeStyle = sec.color; g.lineWidth = clamp(0.028 * s.on.s, 0.8, 3);
+        g.beginPath(); g.ellipse(s.on.x, s.on.y, 0.2 * s.on.s, 0.2 * s.on.s * Math.abs(this.cam.fwd[1]) + 0.02 * s.on.s, 0, 0, 7); g.stroke();
+      }
       g.drawImage(this.shadow, s.b.x - w * 0.6, s.b.y - w * 0.08, w * 1.2, w * 0.16);
       // the drawing stands upright on the ground: map the image onto top edge -> foot
       const small = rect.h * this.dpr < card.far.height, img = small ? card.far : card.sketch, pic = small ? card.farPhoto : card.photo;
       const iw = img.width, ih = img.height, lift = card.open * 0.05 * sc;
       g.save();
       g.transform(w / iw, 0, (s.b.x - s.t.x) / ih, (s.b.y - s.t.y) / ih, s.t.x - w / 2, s.t.y - lift);
-      for (let k = Math.min(card.behind, 2); k > 0; k--) {   // more pictures at this stop: their sheets show behind the first
-        const dx = -s.side * k * iw * 0.045, dy = -k * ih * 0.04;
-        g.fillStyle = '#fff'; g.fillRect(dx, dy, iw, ih);
-        g.strokeStyle = `rgba(${GRAPHITE},.42)`; g.lineWidth = iw * 0.006; g.strokeRect(dx, dy, iw, ih);
-      }
       g.drawImage(img, 0, 0);
       if (pic) {   // one streak of the photograph, parallel to the pencil strokes
-        const half = iw * (0.014 + 0.075 * card.open), cx = iw * (0.5 + 0.1 * Math.sin(s.i * 2.4)), dx = Math.cos(50 * Math.PI / 180), dy = -Math.sin(50 * Math.PI / 180), R = ih;
+        const half = iw * (0.014 + 0.075 * card.open), cx = iw * (0.5 + 0.1 * Math.sin(s.i * 2.4 + s.pic)), dx = Math.cos(50 * Math.PI / 180), dy = -Math.sin(50 * Math.PI / 180), R = ih;
         g.beginPath(); g.moveTo(cx - dx * R + dy * half, ih / 2 - dy * R - dx * half); g.lineTo(cx + dx * R + dy * half, ih / 2 + dy * R - dx * half);
         g.lineTo(cx + dx * R - dy * half, ih / 2 + dy * R + dx * half); g.lineTo(cx - dx * R - dy * half, ih / 2 - dy * R + dx * half); g.clip();
         g.drawImage(pic, 0, 0);
       }
       g.restore();
-      if (sc > 24 && s.b.z > 3.2) {   // caption on the ground, between the drawing and the line
+      if (!s.pic && sc > 24 && s.b.z > 3.2) {   // caption on the ground, between the drawing and the line
         const inner = -s.side, x = s.b.x + inner * (w / 2 + 0.16 * sc), cs = Math.min(sc, 190);
         g.globalAlpha = a * clamp((s.b.z - 3.2) / 1.6);
         g.textAlign = inner > 0 ? 'left' : 'right'; g.textBaseline = 'alphabetic';
@@ -468,7 +478,7 @@ export class Engine {
         const tw = g.measureText(label).width;
         this.rects.push({ key: s.key, rect: { x: (inner > 0 ? x : x - tw) - 8, y: s.b.y - 0.48 * cs, w: tw + 16, h: 0.56 * cs } });
         g.font = `500 ${Math.max(0.06 * cs, 7)}px "IBM Plex Mono", monospace`;
-        g.fillStyle = sec.color; g.fillText(s.stop ? `NO. ${String(s.i + 1).padStart(2, '0')}${s.stop.more?.length ? ` · ${s.stop.more.length + 1} PICTURES` : ''}` : 'THE END OF THE LINE', x, s.b.y - 0.37 * cs);
+        g.fillStyle = sec.color; g.fillText(s.stop ? (s.stop.when ?? `No. ${String(s.i + 1).padStart(2, '0')}`).toUpperCase() : 'THE END OF THE LINE', x, s.b.y - 0.37 * cs);
         if (hot) { const tw = Math.min(0.9 * cs, 120); g.fillRect(inner > 0 ? x : x - tw, s.b.y - 0.09 * cs, tw, Math.max(1.5, 0.012 * cs)); }
       }
     }
@@ -540,7 +550,7 @@ export class Engine {
     if (this.mode === 'cover') { const r = this.ribbonAt(x, y); if (r) void this.open(r); }
     else if (this.mode === 'path') {
       const hit = this.cardAt(x, y); if (!hit) return;
-      if (hit.key === 'end') void this.close(); else this.cb.openStop(hit.key, hit.rect);
+      if (hit.key === 'end') void this.close(); else this.cb.openStop(hit.key, hit.rect, hit.pic ?? 0);
     }
   }
 }

@@ -41,7 +41,7 @@ export default function Sketchbook() {
           }
         }
       },
-      openStop(i, rect) { from.current = rect; setStop(i); setOpen(true); },
+      openStop(i, rect, picture) { from.current = rect; setStop(i); setTurned({ at: `${shown}:${i}`, n: picture }); setOpen(true); },
       progress(u, range) {
         marker.current?.style.setProperty('--p', String(range ? u / range : 0));
         if (!moved && u > 1.2) { moved = true; setWalked(true); }
@@ -181,14 +181,14 @@ export default function Sketchbook() {
         </div>
         {current && (
           <div className="sb-notes">
-            <p className="sb-mono sb-no">No. {number(at)} / {sec.label}</p>
+            <p className="sb-mono sb-no">{current.when ?? `No. ${number(at)}`} / {sec.label}</p>
             <h2>{current.title}</h2>
             <p className="sb-mono sb-when">{current.meta}</p>
             {current.body.map(p => <p className="sb-body" key={p}>{p}</p>)}
             {current.tags && <p className="sb-mono sb-tags">{current.tags.join(' · ')}</p>}
             {current.links && <p className="sb-links">{current.links.map(l => <a key={l.href} href={l.href} target={l.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>)}</p>}
             <div className="sb-rule" />
-            {art?.photo && <p className="sb-mono sb-how">{art.sheet ? 'Move across the figure. Hold to see it in colour.' : 'Move across the drawing. Hold to see the photograph.'}</p>}
+            {art?.photo && <p className="sb-mono sb-how">Move across the drawing. Hold to see the photograph.</p>}
             <div className="sb-walk">
               {at > 0 && <button className="sb-mono" onClick={() => void travel(at - 1)}><span aria-hidden="true">←</span> {stops[at - 1].title}</button>}
               <button className="sb-mono sb-next" onClick={() => void travel(at + 1)}>{last ? 'Walk to the end of the line' : <>Next: {stops[at + 1].title}</>} <span aria-hidden="true">→</span></button>
