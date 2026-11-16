@@ -49,16 +49,17 @@ FIGURES = {
     "dive2": ("in3/dive_path.png", (0.15, 0.03, 0.85, 0.60)),
 }
 FIGURE_SIDE = 2000   # larger than a drawing: the lettering has to stay readable. Never enlarged.
-# line -> (pencil render with alpha, top and bottom of the strip as fractions of its height)
+# line -> (pencil render with alpha, top and bottom of the strip as fractions of its height[, left and right as fractions of its width])
 BACKDROPS = {
     "about": ("out/bg/20261010_182154__pencil_alpha.png", 0.615, 0.745),    # Ithaca and its ridge, from the clock tower
     "research": ("out/bg/20261010_175505__pencil_alpha.png", 0.405, 0.50),  # Cayuga Lake and the far shore
+    "projects": ("out/bg/20261108_144830__pencil_alpha.png", 0.43, 0.60, 0.23, 0.94),  # Boston across the Charles, from Memorial Drive during the MIT hack
 }
 
 
-def backdrop(src, top, bottom, width=2200):
+def backdrop(src, top, bottom, left=0.0, right=1.0, width=2200):
     im = Image.open(src).convert("RGBA")
-    im = im.crop((0, round(top * im.height), im.width, round(bottom * im.height)))
+    im = im.crop((round(left * im.width), round(top * im.height), round(right * im.width), round(bottom * im.height)))
     im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
     a = np.asarray(im).astype(np.float32)
     h, w = a.shape[:2]
@@ -98,8 +99,8 @@ def main():
         colour.save(out / f"plates/{name}.webp", quality=86, method=6)
         print("figure", name, colour.size, round(colour.width / colour.height, 3))
     (out / "backdrops").mkdir(parents=True, exist_ok=True)
-    for line, (src, top, bottom) in BACKDROPS.items():
-        strip = backdrop(src, top, bottom)
+    for line, (src, *part) in BACKDROPS.items():
+        strip = backdrop(src, *part)
         strip.save(out / f"backdrops/{line}.webp", quality=78, method=6)
         print("backdrop", line, strip.size, round(strip.width / strip.height, 3))
 

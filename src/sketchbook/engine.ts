@@ -356,7 +356,8 @@ export class Engine {
     const sky = this.skies.get(this.section), flat = Math.hypot(this.cam.fwd[0], this.cam.fwd[2]);
     if (sky && m > 0.02 && flat > 0.05) {
       const horizon = this.vh / 2 + this.cam.f * this.cam.fwd[1] / flat, yaw = Math.atan2(this.cam.fwd[0], this.cam.fwd[2]);
-      const w = this.vh * 1.55, hgt = w * sky.height / sky.width, x0 = this.vw / 2 - w / 2 - this.cam.f * Math.tan(yaw) * 0.9, y = horizon - hgt * 0.66;
+      const w = this.vh * Math.min(1.55, 0.2 * sky.width / sky.height), hgt = w * sky.height / sky.width,   // never taller than a fifth of the view
+      x0 = this.vw / 2 - w / 2 - this.cam.f * Math.tan(yaw) * 0.9, y = horizon - hgt * 0.66;
       g.globalAlpha = alpha * m * 0.6;
       for (let i = Math.floor(-x0 / w) - 1; x0 + i * w < this.vw; i++) {
         if (x0 + (i + 1) * w < 0) continue;

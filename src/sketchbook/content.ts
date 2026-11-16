@@ -150,12 +150,12 @@ const resumeStops: Stop[] = [
   },
 ];
 
-const ABOUT_SKY = 10.3, RESEARCH_SKY = 9.6;   // width / height of the two skyline strips
+const ABOUT_SKY = 10.3, RESEARCH_SKY = 9.6, PROJECTS_SKY = 5.7;   // width / height of the two skyline strips
 
 // Ribbon colours: the mustard and blue are sampled from the photographs, the green and rust are close to them.
 export const sections: Record<SectionId, Section> = {
   about: { id: 'about', label: 'About', color: '#5f7d3c', stops: aboutStops, backdrop: { src: '/sketchbook/backdrops/about.webp', ratio: ABOUT_SKY } },
-  projects: { id: 'projects', label: 'Projects', color: '#c9960f', stops: projectStops },
+  projects: { id: 'projects', label: 'Projects', color: '#c9960f', stops: projectStops, backdrop: { src: '/sketchbook/backdrops/projects.webp', ratio: PROJECTS_SKY } },
   research: { id: 'research', label: 'Research', color: '#b6532a', stops: researchStops, backdrop: { src: '/sketchbook/backdrops/research.webp', ratio: RESEARCH_SKY } },
   resume: { id: 'resume', label: 'Résumé', color: '#2f4a8a', stops: resumeStops },
 };
