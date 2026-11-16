@@ -35,7 +35,8 @@ PLATES = {
 }
 LONG_SIDE = 1400
 # Figures from the research itself: shown as they are, in graphite, with their colours underneath.
-# name on the site -> (picture, whether the graphite version is turned light-on-dark to dark-on-light)
+# name on the site -> (picture, whether the graphite version is turned light-on-dark to dark-on-light[, the part to keep,
+# as left, top, right, bottom fractions])
 FIGURES = {
     "drift": ("out/paper/figure1.png", False),         # figure 1 of the forecasting paper, lifted from the PDF onto white
     "particles": ("in3/irrigation_plot.png", False),   # as supplied
@@ -44,6 +45,8 @@ FIGURES = {
     "hive1": ("in3/hive1.png", False),                 # screenshots of The Hive's simulator
     "hive2": ("in3/hive2.png", False),
     "hive3": ("in3/hive3.png", False),
+    "dive1": ("in3/dive_swim.png", True, (0, 0, 1, 0.78)),          # Dive's sea prototype, without the prototype's own controls
+    "dive2": ("in3/dive_path.png", True, (0.15, 0.03, 0.85, 0.60)),
 }
 FIGURE_SIDE = 2000   # larger than a drawing: the lettering has to stay readable. Never enlarged.
 GRAPHITE = 38        # the darkest a figure gets, so its black sits with the pencil
@@ -86,8 +89,11 @@ def main():
         sketch.resize(size, Image.LANCZOS).save(out / f"plates/{name}_s.webp", quality=80, method=6)
         photo.resize(size, Image.LANCZOS).save(out / f"plates/{name}_p.webp", quality=82, method=6)
         print(name, size, round(size[0] / size[1], 3))
-    for name, (src, negative) in FIGURES.items():
+    for name, (src, negative, *part) in FIGURES.items():
         colour = Image.open(src).convert("RGB")
+        if part:
+            x0, y0, x1, y1 = part[0]
+            colour = colour.crop((round(x0 * colour.width), round(y0 * colour.height), round(x1 * colour.width), round(y1 * colour.height)))
         k = min(1.0, FIGURE_SIDE / max(colour.size))
         colour = colour.resize((round(colour.width * k), round(colour.height * k)), Image.LANCZOS)
         grey = np.asarray(colour.convert("L")).astype(np.float32)
