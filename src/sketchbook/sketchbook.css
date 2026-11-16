@@ -113,4 +113,6 @@
   .sb-mast { left: 18px; }
   .sb .sb-close, .sb .sb-back { right: 14px; }
 }
+/* a short window: the book is drawn smaller but the prompt is not, so it sits lower to stay clear of the ribbons' labels */
+@media (max-height: 760px) { .sb-prompt { bottom: 12px; padding: 6px 12px; } }
 @media (prefers-reduced-motion: reduce) { .sb-hint circle, .sb-hint .sb-chev, .sb-prompt { animation: none; } }

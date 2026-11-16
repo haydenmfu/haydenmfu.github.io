@@ -28,7 +28,7 @@ LABEL = (2.6, 11.4, 12.4, 16.6)     # x0, y0, x1, y1 on the front cover
 RIBBONS = [  # exit x, end point (x, y), bend, name, how far through the book it marks
     (3.4, (-2.6, -7.4), -2.0, "about", 0.22),
     (6.2, (4.4, -9.3), 1.6, "projects", 0.42),
-    (8.8, (11.4, -8.9), -1.4, "research", 0.60),
+    (8.8, (10.8, -6.7), -1.1, "research", 0.60),   # shorter than its neighbours: its label has to clear the prompt at the foot of the cover
     (11.4, (17.8, -6.8), 2.2, "resume", 0.80),
 ]
 LEVEL = [BOARD + (T - 2 * BOARD) * (1 - r[4]) for r in RIBBONS]   # height of each ribbon's page
