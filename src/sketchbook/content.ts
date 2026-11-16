@@ -87,7 +87,7 @@ const projectStops: Stop[] = [
   {
     ...project('SASH: Search Across Six Hops'),
     art: figure('sixhops', 1.957, 'The demo screen'),
-    more: [plate('sash_team1', 0.75, 'The team, with the prize'), plate('sash_team2', 0.75, 'The team, with the prize'), plate('sash', 0.75, 'The prize')],
+    more: [plate('sash_team', 0.75, 'The team at Big Red Hacks'), plate('sash', 0.75, 'The prize')],
   },
   {
     title: 'Pencil sketches from photographs',

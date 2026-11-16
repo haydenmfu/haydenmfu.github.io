@@ -22,7 +22,7 @@ from mangafy import load_rgb
 PLATES = {
     "street": ("out/skin", "in", "20261108_153927"),
     "hack": ("out/skin", "in", "MITClimateHacks-3"),
-    "portrait": ("out/plates2", "in2", "20261106_162855_mirrored"),   # a selfie, turned back so the sign behind reads the right way
+    "portrait": ("out/skin", "in", "20261107_105621"),
     "build": ("out/plates2", "in2", "20261013_230648"),
     "lately": ("out/plates2", "in2", "20261004_145320"),
     "tower": ("out/plates2", "in2", "20261010_174912"),
@@ -31,8 +31,7 @@ PLATES = {
     "sash": ("out/plates2", "in2", "20261004_120912"),
     "irrigation": ("out/plates2", "in2", "20260629_090842"),
     "snow": ("out/plates2", "in2", "20251110_103749"),
-    "sash_team1": ("out/plates2", "in2", "20261004_115301"),
-    "sash_team2": ("out/plates2", "in2", "20261004_115323"),
+    "sash_team": ("out/plates2", "in2", "sash_team"),
 }
 LONG_SIDE = 1400
 # Figures from the research itself: shown as they are, in graphite, with their colours underneath.
