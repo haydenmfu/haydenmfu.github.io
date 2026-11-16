@@ -126,4 +126,12 @@
 }
 /* a short window: the book is drawn smaller but the prompt is not, so it sits lower to stay clear of the ribbons' labels */
 @media (max-height: 760px) { .sb-prompt { bottom: 12px; padding: 6px 12px; } }
+/* a phone held sideways: little height, so the prompt takes the empty top corner of the cover and the hint stands beside the tabs
+   (the engine fits the cover to match) */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sb-prompt { top: 14px; left: 18px; bottom: auto; transform: none; animation-name: sb-show; }
+  .sb .sb-hint { bottom: 24px; left: auto; right: 64px; transform: none; }
+  .sb-hint .sb-chev { display: none; }
+}
+@keyframes sb-show { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sb-hint circle, .sb-hint .sb-chev, .sb-prompt { animation: none; } }

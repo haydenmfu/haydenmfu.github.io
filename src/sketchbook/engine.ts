@@ -314,10 +314,13 @@ export class Engine {
   private fit(grow = 0) {   // 0: the cover, the whole drawing in view; 1: the frame fills the window
     const [fw, fh] = this.book.size, vw = this.vw, vh = this.vh, whole = Math.min(vw / fw, vh / fh), fill = Math.max(vw / fw, vh / fh);
     let k0 = whole, ox0 = (vw - fw * whole) / 2, oy0 = (vh - fh * whole) / 2;
-    if (vw < vh) {   // portrait: fit the drawing itself, leaving room for the labels under the ribbons and the prompt below
-      const padL = 40, padR = 14, below = 34, prompt = 70, dw = DRAWN.x1 - DRAWN.x0, dh = DRAWN.y1 - DRAWN.y0;
-      const k = Math.min((vw - padL - padR) / dw, (vh - prompt - below - 40) / dh);
-      if (k > whole) { k0 = k; ox0 = padL + (vw - padL - padR - dw * k) / 2 - DRAWN.x0 * k; oy0 = (vh - prompt - below - dh * k) / 2 - DRAWN.y0 * k; }
+    // Portrait: fit the drawing itself, leaving room for the names under the ribbons and the prompt below.
+    // A phone held sideways (short and wide; the prompt moves to the top corner, see the CSS): fit it so the names stay on screen.
+    const short = vw >= vh && vh <= 500;
+    if (vw < vh || short) {
+      const padL = 40, padR = 14, below = 34, prompt = short ? 0 : 70, margin = short ? 16 : 40, dw = DRAWN.x1 - DRAWN.x0, dh = DRAWN.y1 - DRAWN.y0;
+      const k = Math.min((vw - padL - padR) / dw, (vh - prompt - below - margin) / dh);
+      if (k > whole || short) { k0 = k; ox0 = padL + (vw - padL - padR - dw * k) / 2 - DRAWN.x0 * k; oy0 = (vh - prompt - below - dh * k) / 2 - DRAWN.y0 * k; }
     }
     return { k: lerp(k0, fill, grow), ox: lerp(ox0, (vw - fw * fill) / 2, grow), oy: lerp(oy0, (vh - fh * fill) / 2, grow) };
   }
