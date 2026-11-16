@@ -88,6 +88,11 @@
 .sb-no { margin: 0; color: var(--line); }
 .sb-notes h2 { font: italic 400 clamp(38px, 4.6vw, 72px)/1.04 Newsreader, Georgia, serif; letter-spacing: -.01em; margin: 16px 0 14px; text-wrap: balance; }
 .sb-when { margin: 0 0 26px; color: var(--soft); }
+/* the project team a stop belongs to: its mark, and a link to its site */
+.sb-team { display: inline-flex; align-items: center; gap: 10px; margin: -12px 0 24px; padding: 5px 12px 5px 5px; border: 1px solid color-mix(in srgb, var(--graphite) 30%, #fff); border-radius: 999px;
+           color: var(--graphite); text-decoration: none; transition: border-color .2s, color .2s; }
+.sb-team img { position: static; width: 26px; height: 26px; border-radius: 50%; }
+.sb-team:hover { border-color: var(--line); color: var(--line); }
 .sb-body { margin: 0 0 14px; font-size: 18.5px; line-height: 1.56; }
 .sb-tags { margin: 18px 0 0; color: var(--soft); }
 .sb-links { margin: 18px 0 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }

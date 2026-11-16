@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
-import { ownerName, pictures, sectionOrder, sections, type SectionId } from './content';
+import { geoData, ownerName, pictures, sectionOrder, sections, type SectionId } from './content';
 import { Engine, lineRange, lineView, type Mode, type Rect } from './engine';
 import './sketchbook.css';
 
@@ -184,6 +184,7 @@ export default function Sketchbook() {
             <p className="sb-mono sb-no">{current.when ?? `No. ${number(at)}`} / {sec.label}</p>
             <h2>{current.title}</h2>
             <p className="sb-mono sb-when">{current.meta}</p>
+            {current.team && <a className="sb-team sb-mono" href={geoData.href} target="_blank" rel="noopener noreferrer"><img src={geoData.logo} alt="" />{current.team} <span aria-hidden="true">↗</span></a>}
             {current.body.map(p => <p className="sb-body" key={p}>{p}</p>)}
             {current.tags && <p className="sb-mono sb-tags">{current.tags.join(' · ')}</p>}
             {current.links && <p className="sb-links">{current.links.map(l => <a key={l.href} href={l.href} target={l.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>)}</p>}
@@ -203,7 +204,7 @@ export default function Sketchbook() {
         <h1>{ownerName}</h1>
         {sectionOrder.map(id => (
           <section key={id}><h2>{sections[id].label}</h2>
-            {sections[id].stops.map(s => <article key={s.title}><h3>{s.title}</h3><p>{s.meta}</p>{s.body.map(p => <p key={p}>{p}</p>)}{s.links?.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}</article>)}
+            {sections[id].stops.map(s => <article key={s.title}><h3>{s.title}</h3><p>{s.meta}</p>{s.team && <a href={geoData.href}>{s.team}</a>}{s.body.map(p => <p key={p}>{p}</p>)}{s.links?.map(l => <a key={l.href} href={l.href}>{l.label}</a>)}</article>)}
           </section>
         ))}
       </div>

@@ -44,6 +44,8 @@ FIGURES = {
     "workflow": ("out/report/p4-04.png", (0.105, 0.180, 0.895, 0.455)),   # figure 1 of the irrigation technical report: page 4 at 300 dpi
     "scatter": ("in3/lake_effect.png",),             # black bars cut off, then stretched back from 1600 to 1920 wide (the dots are round again)
     "sixhops": ("in3/sixhops.png",),                 # the Six Hops demo screen
+    "corn1": ("in3/corn_monitor.png", (0, 0, 1, 0.688)),   # Weather Quant: the signal monitor, above its skill table
+    "corn2": ("in3/corn_skill.png",),                # ... and forecast skill by lead (weather only: nothing from licensed prices)
     "hive1": ("in3/hive1.png",),                     # screenshots of The Hive's simulator
     "hive3": ("in3/hive3.png",),
     "dive1": ("in3/dive_branch.png",),               # Dive: a step on someone's path, and the fish builder

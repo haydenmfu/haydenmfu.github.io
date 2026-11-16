@@ -17,6 +17,7 @@ export interface Stop {
   when?: string;    // shown in place of the stop's number where the date says more
   tags?: string[];
   links?: { href: string; label: string }[];
+  team?: string;    // how the stop is tied to Cornell Geo Data, shown beside the team's mark and linked to its site
   art?: Art;        // the picture that stands beside the line; stops without one stand as blank sheets
   more?: Art[];     // further pictures, turned to once the stop is open
 }
@@ -42,6 +43,9 @@ const plate = (name: string, ratio = 0.75, caption?: string): Art => ({
 const figure = (name: string, ratio: number, caption?: string): Art => ({ sketch: `/sketchbook/plates/${name}.webp`, ratio, caption, sheet: true });
 export const pictures = (stop: Stop): Art[] => (stop.art ? [stop.art, ...(stop.more ?? [])] : []);
 
+// Cornell Geo Data: the project team I am part of.
+export const geoData = { name: 'Cornell Geo Data', href: 'https://cornellgeodata.com/', logo: '/sketchbook/geodata.png' };
+
 // When each piece of work was done, from the résumés and the dates on the photographs.
 const WHEN: Record<string, string> = {
   'SASH: Search Across Six Hops': 'Oct 2026',
@@ -61,7 +65,7 @@ const aboutStops: Stop[] = [
   { title: profile.name, meta: `${profile.school} / ${profile.degree}`, body: [about.story[0]], art: plate('portrait') },
   { title: 'What I build', meta: 'Software, data pipelines, AI evaluation', body: [about.story[1]], art: plate('build') },
   { title: 'Lately', meta: '2026', body: [about.current[0]], art: plate('lately') },
-  { title: 'Where I am', meta: profile.location, body: [`I study ${profile.degree.toLowerCase()} at ${profile.school}. I'm in ${profile.location.replace('; the', ', and the')}.`], art: plate('tower') },
+  { title: 'Where I am', meta: profile.location, body: [`I study ${profile.degree.toLowerCase()} at ${profile.school}. I'm in ${profile.location.replace('; the', ', and the')}.`, `On campus I'm part of ${geoData.name}, a Cornell project team.`], team: 'Member of Cornell Geo Data', art: plate('tower') },
   { title: 'What I am looking for', meta: profile.availability, body: [about.current[1]], art: plate('window') },
   {
     title: 'Grab me a coffee',
@@ -88,6 +92,7 @@ const projectStops: Stop[] = [
     ],
     tags: ['TypeScript', 'three.js', 'Vite', 'Cloudflare Workers'],
     links: [{ href: 'https://thehive.boston/', label: 'See The Hive' }],
+    team: 'Built with teammates from Cornell Geo Data',
     art: plate('hack', 0.667, 'At the hack'),
     more: [
       figure('hive1', 1.982, 'The simulator: scouting a site'),
@@ -135,11 +140,29 @@ const researchStops: Stop[] = [
     ],
   },
   {
+    title: 'Weather Quant',
+    when: 'Nov 2026',
+    meta: 'Forecasting / Commodity Markets / 2026',
+    body: [
+      'Do weather forecasts give an edge in December corn futures? I built an engine that turns a weather forecast over US corn acreage into news about the national corn yield. A county-level yield model, fitted walk-forward on 1981–2025 USDA yields and gridMET weather, gives the expected yield from the weather so far, and every member of a forecast ensemble is run through it to give the expected revision a week ahead.',
+      'Pre-registered tests then asked whether that news predicts corn futures returns, using GEFS, ECMWF and the AI weather model Aurora. Mostly it does not: the market prices public forecast news the day it arrives, and a better weather model disagreeing with GEFS did not predict returns. The monitor shown here replays any season from 2000 to 2025 day by day.',
+    ],
+    tags: ['Python', 'NetCDF', 'SLURM', 'Aurora 1.5'],
+    team: 'A Cornell Geo Data project',
+    art: figure('corn1', 1.746, 'The signal monitor, replaying July 2012'),
+    more: [figure('corn2', 2.926, 'How well each forecast matches the weather over corn, by lead time')],
+  },
+  {
     ...project('Irrigation Data Assimilation'),
     art: figure('particles', 1.423, 'Soil moisture and inferred irrigation'),
     more: [figure('workflow', 2.217, 'The estimation loop, window by window')],
   },
-  { ...project('Lake-Effect Snow Forecasting'), art: figure('scatter', 1.6, 'Wind speed against temperature'), more: [plate('snow', 1.333, 'First snow on campus')] },
+  {
+    ...project('Lake-Effect Snow Forecasting'),
+    team: 'A Cornell Geo Data project',
+    art: figure('scatter', 1.6, 'Wind speed against temperature'),
+    more: [plate('snow', 1.333, 'First snow on campus')],
+  },
 ];
 
 // Résumé: the two documents, nothing else. Everything in them is already on the other lines.
