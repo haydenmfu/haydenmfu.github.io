@@ -53,7 +53,10 @@
 .sb .sb-hint[data-show="false"] { opacity: 0; pointer-events: none; }
 .sb-hint svg { width: 24px; height: 38px; fill: none; stroke: var(--graphite); stroke-width: 1.6; }
 .sb-hint circle { fill: var(--line); stroke: none; animation: sb-wheel 1.5s ease-in-out infinite; }
-.sb-hint span { font-size: 13px; padding: 8px 14px; background: #fff; border: 1px solid var(--graphite); }
+.sb-hint span { font-size: 13px; padding: 8px 14px; background: #fff; border: 1px solid var(--graphite); white-space: nowrap; }
+.sb-hint .sb-by-touch { display: none; }
+/* a touch screen: no wheel to draw, and you swipe rather than scroll */
+@media (hover: none) and (pointer: coarse) { .sb-hint .sb-wheel, .sb-hint .sb-by-wheel { display: none; } .sb-hint .sb-by-touch { display: block; } }
 .sb-hint .sb-chev { width: 22px; height: 22px; stroke: var(--line); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; animation: sb-nod 1.5s ease-in-out infinite; }
 @keyframes sb-wheel { 0% { transform: translateY(0); opacity: 1; } 70%, 100% { transform: translateY(12px); opacity: 0; } }
 @keyframes sb-nod { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
@@ -117,6 +120,8 @@
   .sb-lines { left: 18px; gap: 14px; }
   .sb-mast { left: 18px; }
   .sb .sb-close, .sb .sb-back { right: 14px; }
+  .sb .sb-hint { bottom: 118px; gap: 6px; }   /* above the section tabs, not over them */
+  .sb-hint span { font-size: 11px; padding: 7px 12px; }
 }
 /* a short window: the book is drawn smaller but the prompt is not, so it sits lower to stay clear of the ribbons' labels */
 @media (max-height: 760px) { .sb-prompt { bottom: 12px; padding: 6px 12px; } }

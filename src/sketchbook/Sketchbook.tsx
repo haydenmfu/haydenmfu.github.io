@@ -153,8 +153,9 @@ export default function Sketchbook() {
       </nav>
 
       <div className="sb-hint sb-hud" data-show={inPath && !walked && !travelling}>
-        <svg viewBox="0 0 24 38" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="35" rx="10.5" /><circle cx="12" cy="11" r="2.4" /></svg>
-        <span className="sb-mono">Scroll to walk the line</span>
+        <svg className="sb-wheel" viewBox="0 0 24 38" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="35" rx="10.5" /><circle cx="12" cy="11" r="2.4" /></svg>
+        <span className="sb-mono sb-by-wheel">Scroll to walk the line</span>
+        <span className="sb-mono sb-by-touch">Swipe up to walk the line</span>
         <svg className="sb-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8l7 7 7-7" /></svg>
       </div>
 

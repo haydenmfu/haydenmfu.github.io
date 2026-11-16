@@ -81,6 +81,8 @@ def main():
             (out / "book" / name).mkdir(parents=True, exist_ok=True)
             for i in range(len(frames)):
                 frame = Image.open(f"out/book/pencil/{name}_f{i:02d}__pencil.png").convert("L")
+                if i:   # only ever seen moving, and held at 80% in the browser: store them at that size (the cover stays full size)
+                    frame = frame.resize((round(frame.width * 0.8), round(frame.height * 0.8)), Image.LANCZOS)
                 frame.save(out / f"book/{name}/f{i:02d}.webp", quality=72, method=6)
         (out / "book/frames.json").write_text(json.dumps(meta, separators=(",", ":")))
     (out / "plates").mkdir(parents=True, exist_ok=True)
