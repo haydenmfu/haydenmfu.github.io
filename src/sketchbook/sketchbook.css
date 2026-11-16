@@ -117,7 +117,8 @@
   .sb-plate figure, .sb-view[data-many="true"] figure { width: min(86vw, 520px); }
   .sb-notes { padding: 28px 7vw 48px; }
   .sb-map { right: 16px; }
-  .sb-lines { left: 18px; gap: 14px; }
+  /* the tabs get a strip of paper behind them, so the line and its rings passing underneath fade out before the names */
+  .sb-lines { left: 0; right: 0; bottom: 0; gap: 14px; padding: 34px 18px 26px; background: linear-gradient(rgba(255, 255, 255, 0), #fff 46%); }
   .sb-mast { left: 18px; }
   .sb .sb-close, .sb .sb-back { right: 14px; }
   .sb .sb-hint { bottom: 118px; gap: 6px; }   /* above the section tabs, not over them */
