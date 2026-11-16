@@ -30,7 +30,6 @@ PLATES = {
     "window": ("out/plates2", "in2", "20261011_144948"),
     "coffee": ("out/plates2", "in2", "20260906_202003"),   # the guest wifi password on the table card is smudged in the source
     "sash": ("out/plates2", "in2", "20261004_120912"),
-    "irrigation": ("out/plates2", "in2", "20260629_090842"),
     "snow": ("out/plates2", "in2", "20251110_103749"),
     "sash_team": ("out/plates2", "in2", "sash_team"),
 }
@@ -38,8 +37,11 @@ LONG_SIDE = 1400
 # Plots and screenshots: published whole and in their own colours.
 # name on the site -> (picture[, the part to keep, as left, top, right, bottom fractions])
 FIGURES = {
-    "drift": ("out/paper/figure1.png",),             # figure 1 of the forecasting paper, lifted from the PDF onto white
+    "drift": ("out/paper/figure1.png",),             # figures 1, 3 and 4 of the forecasting paper, lifted from the PDF onto white
+    "drift2": ("out/paper/figure3.png",),
+    "drift3": ("out/paper/figure4.png",),
     "particles": ("in3/irrigation_plot.png",),       # as supplied
+    "workflow": ("out/report/p4-04.png", (0.105, 0.180, 0.895, 0.455)),   # figure 1 of the irrigation technical report: page 4 at 300 dpi
     "scatter": ("in3/lake_effect.png",),             # black bars cut off, then stretched back from 1600 to 1920 wide (the dots are round again)
     "sixhops": ("in3/sixhops.png",),                 # the Six Hops demo screen
     "hive1": ("in3/hive1.png",),                     # screenshots of The Hive's simulator

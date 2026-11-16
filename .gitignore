@@ -1,3 +1,14 @@
+# What belongs in this repository: the site's source (src/, index.html, configs), what it serves
+# (public/), the workflow that deploys it, and the tools that draw its pictures (tools/manga).
+# Everything below is local to this machine.
+
+# Dependencies and build output
+node_modules
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+
 # Logs
 logs
 *.log
@@ -7,35 +18,44 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Private / local-only folders
-fonts/
-personal/
-ADDING_CONTENT.md
-COMPUTE_RESOURCES.md
-test_photos/
-tools/manga/out/
-
-# Editor directories and files
+# Editor and system files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Prototype assets are personal photos and renders
-prototypes/sketchbook/assets/
-
 # Python
 __pycache__/
+*.pyc
 
-# Photos waiting to be drawn (raw, personal)
+# Photographs and documents the pictures are made from: raw and personal. Only the drawings
+# and figures exported into public/sketchbook are published.
 photos/
+test_photos/
+tools/manga/out/
+
+# Licensed fonts kept on this machine (the site loads its fonts from Google Fonts)
+fonts/
+
+# Working documents, notes and source copies of what public/ already serves
+personal/
+qa.local/
+ADDING_CONTENT.md
+COMPUTE_RESOURCES.md
+/Experience.docx
+/Hayden Fu Website Descriptions.txt
+/resumes/
+/work_covers/
+/Custom Backgrounds/
+/.plans/
+/scripts/
+
+# Earlier designs and throwaway prototypes, kept locally for reference
+archive/
+prototypes/

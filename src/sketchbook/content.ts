@@ -126,8 +126,19 @@ const projectStops: Stop[] = [
 
 // Research: work done with a lab or a research group.
 const researchStops: Stop[] = [
-  { ...project('LLM Prediction Markets'), art: figure('drift', 1.437, 'Mean forecast as the evidence arrives') },
-  { ...project('Irrigation Data Assimilation'), art: figure('particles', 1.423, 'Soil moisture and inferred irrigation'), more: [plate('irrigation', 0.75, 'Working notes')] },
+  {
+    ...project('LLM Prediction Markets'),
+    art: figure('drift', 1.437, 'Mean forecast as the evidence arrives'),
+    more: [
+      figure('drift2', 1.714, 'Forecasts split by how each market resolved'),
+      figure('drift3', 2.878, 'How strongly an earlier forecast anchors the next'),
+    ],
+  },
+  {
+    ...project('Irrigation Data Assimilation'),
+    art: figure('particles', 1.423, 'Soil moisture and inferred irrigation'),
+    more: [figure('workflow', 2.217, 'The estimation loop, window by window')],
+  },
   { ...project('Lake-Effect Snow Forecasting'), art: figure('scatter', 1.6, 'Wind speed against temperature'), more: [plate('snow', 1.333, 'First snow on campus')] },
 ];
 
