@@ -21,7 +21,7 @@ export const projects: Project[] = [
     year: '2026',
     accent: true,
     pattern: 'checker',
-    link: 'https://openreview.net/forum?id=UXthrIAHqX',
+    link: 'https://openreview.net/pdf?id=UXthrIAHqX',
     linkLabel: 'Read the paper',
   },
   {
